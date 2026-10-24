@@ -55,7 +55,16 @@
 
     <script src="js/editor.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => carregarFichaPorId(1));
+        document.addEventListener("DOMContentLoaded", () => {
+            const parametros = new URLSearchParams(window.location.search);
+            const id = Number(parametros.get("id"));
+
+            if (Number.isInteger(id) && id > 0) {
+                carregarFichaPorId(id);
+            } else {
+                window.location.replace("home.html");
+            }
+        });
     </script>
 </body>
 </html>

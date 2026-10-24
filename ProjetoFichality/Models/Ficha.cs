@@ -6,6 +6,15 @@ public class Ficha
     public string NomePersonagem { get; set; } = string.Empty;
     public string SistemaRpg { get; set; } = string.Empty;
 
+    public int? SistemaRpgId { get; set; }
+
+    public SistemaRpg? Sistema { get; set; }
+
+    public int? ModeloFichaId { get; set; }
+
+    public ModeloFicha? ModeloFicha { get; set; }
+
+
     public int UsuarioId { get; set; }
     public Usuario? Usuario { get; set; }
 

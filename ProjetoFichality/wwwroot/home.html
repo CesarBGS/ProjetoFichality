@@ -1,0 +1,168 @@
+﻿
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fichality — Sua biblioteca de RPG</title>
+
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/home.css">
+
+    <script src="js/auth.js"></script>
+</head>
+<body class="home-page">
+
+    <header class="home-header">
+        <a href="home.html" class="home-brand" aria-label="Fichality">
+            <!-- Use aqui o mesmo src do logo que já funciona no editor.html -->
+            <img src="CAMINHO_REAL_DO_SEU_LOGO" alt="Fichality">
+        </a>
+
+        <nav class="home-nav" aria-label="Navegação principal">
+            <a href="#recentes">Minhas fichas</a>
+            <a href="#destaques">Descobrir</a>
+            <button type="button" id="btnSair" class="btn btn-outline">
+                Sair
+            </button>
+        </nav>
+    </header>
+
+    <main class="home-main">
+
+        <section class="welcome-section">
+            <div>
+                <span class="eyebrow">SEU ESPAÇO DE AVENTURAS</span>
+                <h1>Bem-vindo de volta, <span id="nomeUsuario">aventureiro</span>!</h1>
+                <p>
+                    Seus personagens, seus sistemas e suas histórias.
+                    Tudo pronto para sua próxima aventura?
+                </p>
+            </div>
+
+            <div class="welcome-mark" aria-hidden="true">✦</div>
+        </section>
+
+        <section class="home-actions" aria-label="Ações principais">
+            <button type="button" class="action-card action-primary" id="btnNovaFicha">
+                <span class="action-icon">＋</span>
+                <span>
+                    <strong>Nova ficha</strong>
+                    <small>Crie seu próximo personagem</small>
+                </span>
+            </button>
+
+            <a class="action-card" href="#destaques">
+                <span class="action-icon">⌕</span>
+                <span>
+                    <strong>Explorar destaques</strong>
+                    <small>Descubra sistemas e modelos</small>
+                </span>
+            </a>
+        </section>
+
+        <section class="stats-grid" aria-label="Resumo da conta">
+            <article class="stat-card">
+                <span class="stat-label">Minhas fichas</span>
+                <strong id="totalFichas">—</strong>
+            </article>
+
+            <article class="stat-card">
+                <span class="stat-label">Sistemas criados</span>
+                <strong id="totalSistemas">—</strong>
+            </article>
+        </section>
+
+        <section class="featured-section" id="destaques">
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">EXPLORE A COMUNIDADE</span>
+                    <h2>Destaques do Fichality</h2>
+                    <p>Sistemas, modelos e novidades para descobrir.</p>
+                </div>
+
+                <div class="carousel-controls">
+                    <button type="button" id="slideAnterior"
+                            aria-label="Destaque anterior">
+                        ‹
+                    </button>
+                    <button type="button" id="slideProximo"
+                            aria-label="Próximo destaque">
+                        ›
+                    </button>
+                </div>
+            </div>
+
+            <div id="carouselContainer" class="carousel-container"
+                 aria-live="polite">
+                <div class="carousel-placeholder">
+                    Carregando destaques...
+                </div>
+            </div>
+
+            <div id="carouselIndicadores" class="carousel-indicators"></div>
+        </section>
+
+        <section class="recent-section" id="recentes">
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">CONTINUE DE ONDE PAROU</span>
+                    <h2>Minhas fichas recentes</h2>
+                    <p>Seus personagens atualizados mais recentemente.</p>
+                </div>
+            </div>
+
+            <div id="fichasContainer" class="fichas-grid">
+                <p class="section-loading">Carregando suas fichas...</p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="home-footer">
+        <span>Fichality</span>
+        <span>Suas regras. Seus personagens. Suas aventuras.</span>
+    </footer>
+
+    <dialog id="dialogNovaFicha" class="new-sheet-dialog">
+        <form id="formNovaFicha">
+            <div class="dialog-heading">
+                <div>
+                    <span class="eyebrow">COMECE UMA AVENTURA</span>
+                    <h2>Nova ficha</h2>
+                </div>
+
+                <button type="button" id="fecharDialog"
+                        class="dialog-close" aria-label="Fechar">
+                    ×
+                </button>
+            </div>
+
+            <label for="novoNomePersonagem">Nome do personagem</label>
+            <input id="novoNomePersonagem" name="nomePersonagem"
+                   maxlength="100" required
+                   placeholder="Ex.: Aldric, o Errante">
+
+            <label for="novoSistemaRpg">Sistema de RPG</label>
+            <input id="novoSistemaRpg" name="sistemaRpg"
+                   maxlength="100" required
+                   placeholder="Ex.: Meu sistema de fantasia">
+
+            <p class="dialog-note">
+                Por enquanto, informe o nome do sistema.
+                A seleção de sistemas cadastrados será conectada à biblioteca
+                na próxima etapa.
+            </p>
+
+            <p id="erroNovaFicha" class="form-error" role="alert"></p>
+
+            <button type="submit" class="btn btn-primary btn-full"
+                    id="confirmarNovaFicha">
+                Criar ficha
+            </button>
+        </form>
+    </dialog>
+
+    <script src="js/home.js"></script>
+</body>
+</html>

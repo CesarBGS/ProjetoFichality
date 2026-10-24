@@ -22,6 +22,65 @@ namespace ProjetoFichality.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("ProjetoFichality.Models.Destaque", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("DataCriacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DataFim")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DataInicio")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImagemUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LinkUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ModeloFichaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Ordem")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Resumo")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int?>("SistemaRpgId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Tipo")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Titulo")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ModeloFichaId");
+
+                    b.HasIndex("SistemaRpgId");
+
+                    b.ToTable("Destaques");
+                });
+
             modelBuilder.Entity("ProjetoFichality.Models.Ficha", b =>
                 {
                     b.Property<int>("Id")
@@ -40,6 +99,9 @@ namespace ProjetoFichality.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("ModeloFichaId")
+                        .HasColumnType("int");
+
                     b.Property<string>("NomePersonagem")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -48,14 +110,112 @@ namespace ProjetoFichality.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("SistemaRpgId")
+                        .HasColumnType("int");
+
                     b.Property<int>("UsuarioId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ModeloFichaId");
+
+                    b.HasIndex("SistemaRpgId");
+
                     b.HasIndex("UsuarioId");
 
                     b.ToTable("Fichas");
+                });
+
+            modelBuilder.Entity("ProjetoFichality.Models.ModeloFicha", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DataCriacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EstruturaJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<int>("SistemaRpgId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SistemaRpgId");
+
+                    b.ToTable("ModelosFicha");
+                });
+
+            modelBuilder.Entity("ProjetoFichality.Models.SistemaRpg", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CriadorUsuarioId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DataAtualizacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DataCriacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Lore")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<bool>("PermiteCopia")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Publico")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("RegrasBasicas")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("SistemaOrigemId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Versao")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CriadorUsuarioId");
+
+                    b.HasIndex("SistemaOrigemId");
+
+                    b.ToTable("SistemasRpg");
                 });
 
             modelBuilder.Entity("ProjetoFichality.Models.Usuario", b =>
@@ -96,15 +256,89 @@ namespace ProjetoFichality.Migrations
                     b.ToTable("Usuarios");
                 });
 
+            modelBuilder.Entity("ProjetoFichality.Models.Destaque", b =>
+                {
+                    b.HasOne("ProjetoFichality.Models.ModeloFicha", "ModeloFicha")
+                        .WithMany()
+                        .HasForeignKey("ModeloFichaId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("ProjetoFichality.Models.SistemaRpg", "SistemaRpg")
+                        .WithMany()
+                        .HasForeignKey("SistemaRpgId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("ModeloFicha");
+
+                    b.Navigation("SistemaRpg");
+                });
+
             modelBuilder.Entity("ProjetoFichality.Models.Ficha", b =>
                 {
+                    b.HasOne("ProjetoFichality.Models.ModeloFicha", "ModeloFicha")
+                        .WithMany("Fichas")
+                        .HasForeignKey("ModeloFichaId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("ProjetoFichality.Models.SistemaRpg", "Sistema")
+                        .WithMany("Fichas")
+                        .HasForeignKey("SistemaRpgId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.HasOne("ProjetoFichality.Models.Usuario", "Usuario")
                         .WithMany("Fichas")
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("ModeloFicha");
+
+                    b.Navigation("Sistema");
+
                     b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("ProjetoFichality.Models.ModeloFicha", b =>
+                {
+                    b.HasOne("ProjetoFichality.Models.SistemaRpg", "SistemaRpg")
+                        .WithMany("Modelos")
+                        .HasForeignKey("SistemaRpgId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SistemaRpg");
+                });
+
+            modelBuilder.Entity("ProjetoFichality.Models.SistemaRpg", b =>
+                {
+                    b.HasOne("ProjetoFichality.Models.Usuario", "CriadorUsuario")
+                        .WithMany()
+                        .HasForeignKey("CriadorUsuarioId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("ProjetoFichality.Models.SistemaRpg", "SistemaOrigem")
+                        .WithMany("Copias")
+                        .HasForeignKey("SistemaOrigemId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("CriadorUsuario");
+
+                    b.Navigation("SistemaOrigem");
+                });
+
+            modelBuilder.Entity("ProjetoFichality.Models.ModeloFicha", b =>
+                {
+                    b.Navigation("Fichas");
+                });
+
+            modelBuilder.Entity("ProjetoFichality.Models.SistemaRpg", b =>
+                {
+                    b.Navigation("Copias");
+
+                    b.Navigation("Fichas");
+
+                    b.Navigation("Modelos");
                 });
 
             modelBuilder.Entity("ProjetoFichality.Models.Usuario", b =>

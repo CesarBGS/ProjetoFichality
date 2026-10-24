@@ -1,34 +1,53 @@
-/* FICHALITY - Autenticação, navegação e editor de fichas.
-   Este arquivo pressupõe que o frontend e a API são servidos pela mesma origem. */
 
-// A navegação consulta a sessão real no servidor; localStorage não autentica ninguém.
-(async function verificarSessao() {
+/* ==========================================================================
+   FICHALITY — GUARDA DE NAVEGAÇÃO
+   A sessão real é validada pela API e pelo cookie HttpOnly.
+   ========================================================================== */
+
+(function verificarSessao() {
     const path = window.location.pathname.toLowerCase();
-    const isLandingPage = path === '/' || path.endsWith('/index.html') || path.endsWith('/');
-    const isEditorPage = path.endsWith('/editor.html') || path === 'editor.html';
 
-    if (!isLandingPage && !isEditorPage) return;
+    const isLandingPage =
+        path.endsWith("index.html") || path === "/";
 
-    try {
-        const response = await fetch('/api/autenticacao/me', {
-            method: 'GET',
-            credentials: 'same-origin'
+    const isHomePage = path.endsWith("home.html");
+    const isEditorPage = path.endsWith("editor.html");
+
+    fetch("/api/autenticacao/me", {
+        credentials: "same-origin"
+    })
+        .then(async response => {
+            if (response.ok) {
+                const usuario = await response.json();
+
+                localStorage.setItem(
+                    "fichality_user",
+                    JSON.stringify(usuario)
+                );
+
+                // Usuário autenticado não precisa voltar ao login.
+                if (isLandingPage) {
+                    window.location.replace("home.html");
+                }
+
+                return;
+            }
+
+            localStorage.removeItem("fichality_user");
+
+            if (isHomePage || isEditorPage) {
+                window.location.replace("index.html");
+            }
+        })
+        .catch(erro => {
+            console.error("Falha ao verificar a sessão:", erro);
+
+            if (isHomePage || isEditorPage) {
+                window.location.replace("index.html");
+            }
         });
-
-        if (response.ok) {
-            const usuario = await response.json();
-            localStorage.setItem('fichality_user', JSON.stringify(usuario));
-            if (isLandingPage) window.location.replace('/editor.html');
-        } else {
-            localStorage.removeItem('fichality_user');
-            if (isEditorPage) window.location.replace('/index.html');
-        }
-    } catch (error) {
-        console.error('Não foi possível verificar a sessão:', error);
-        // Não confia em um valor antigo de localStorage se a API não responder.
-        if (isEditorPage) window.location.replace('/index.html');
-    }
 })();
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const formLogin = document.getElementById('formLogin');
@@ -87,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         localStorage.setItem('fichality_user', JSON.stringify(data));
-        window.location.assign('/editor.html');
+        window.location.assign('/home.html');
         return true;
     }
 
@@ -140,18 +159,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (btnSair) {
-        btnSair.addEventListener('click', async (event) => {
+        btnSair.addEventListener("click", async event => {
             event.preventDefault();
+
             try {
-                await fetch('/api/autenticacao/logout', {
-                    method: 'POST',
-                    credentials: 'same-origin'
+                await fetch("/api/autenticacao/logout", {
+                    method: "POST",
+                    credentials: "same-origin"
                 });
-            } catch (error) {
-                console.error('Erro ao encerrar a sessão:', error);
+            } catch (erro) {
+                console.error("Erro ao encerrar sessão:", erro);
             } finally {
-                localStorage.removeItem('fichality_user');
-                window.location.assign('/index.html');
+                localStorage.removeItem("fichality_user");
+                window.location.replace("index.html");
             }
         });
     }
