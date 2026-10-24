@@ -1,0 +1,187 @@
+﻿/* ==========================================================================
+   FICHALITY - ESTILOS EXCLUSIVOS DA LANDING PAGE (landing.css)
+   ========================================================================== */
+
+/* Header & Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 4rem;
+    background-color: var(--bg-white);
+    border-bottom: 3px solid var(--brand-red);
+}
+
+.brand-container {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+/* Imagem do Logo que substitui o texto */
+.brand-logo {
+    height: 70px; /* Ajuste de altura padrão para o cabeçalho */
+    width: auto; /* Mantém a proporção original */
+    max-width: 350px; /* Evita estouro de largura */
+    object-fit: contain;
+    display: block;
+    transition: transform 0.2s ease;
+}
+
+.brand-container:hover .brand-logo {
+    transform: scale(1.02); /* Leve efeito hover no logo */
+}
+
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1.8rem;
+    list-style: none;
+}
+
+.nav-link {
+    color: var(--brand-red);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    text-decoration: none;
+    letter-spacing: 0.5px;
+    position: relative;
+}
+
+    .nav-link:hover::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: var(--brand-red);
+        transform: scale(1.02); /* Leve efeito hover no logo */
+    }
+
+.nav-buttons {
+    display: flex;
+    gap: 0.8rem;
+}
+
+/* Seção Hero (Bem-Vindo) */
+.hero {
+    background-color: var(--bg-light);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 4rem;
+    align-items: center;
+    min-height: 480px;
+    background-image: radial-gradient(rgba(0,0,0,0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+.hero-content {
+    max-width: 520px;
+}
+
+.hero-title {
+    color: var(--brand-red);
+    font-size: 3rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.8rem;
+}
+
+.hero-quote {
+    font-size: 1.4rem;
+    font-style: italic;
+    color: var(--text-dark);
+    font-family: Georgia, serif;
+    margin-bottom: 1.5rem;
+}
+
+.hero-text {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.hero-media {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+    .hero-media img {
+        max-width: 100%;
+        height: auto;
+        opacity: 0.85;
+    }
+
+/* Seção Inferior (O Que É O Fichality?) */
+.about-section {
+    background-color: var(--brand-red-bg);
+    color: var(--text-light);
+    padding: 4rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+}
+
+.about-info h2 {
+    font-size: 2.8rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 1.1;
+    margin-bottom: 2rem;
+}
+
+.about-info p {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text-light-muted);
+    max-width: 450px;
+}
+
+.features-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.feature-card {
+    background-color: var(--brand-red-dark);
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+    .feature-card h3 {
+        color: var(--text-light);
+        font-size: 1.1rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        margin-bottom: 0.4rem;
+        letter-spacing: 0.5px;
+    }
+
+    .feature-card p {
+        color: var(--text-light-muted);
+        font-size: 0.875rem;
+        line-height: 1.4;
+        margin: 0;
+    }
+
+/* Rodapé */
+footer {
+    background-color: #1a0202;
+    color: var(--text-light-muted);
+    text-align: center;
+    padding: 1.25rem;
+    font-size: 0.8rem;
+    margin-top: auto; /* Garante alinhamento ao final da tela */
+}

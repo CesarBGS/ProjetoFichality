@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fichality - Editor de Ficha</title>
+
+    <!-- Estilos com caminhos relativos -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/editor.css">
+
+    <!-- Guard de Autenticação -->
+    <script src="js/auth.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header do Editor -->
+        <header class="editor-header">
+            <div class="editor-header-left">
+                <a href="index.html" class="brand-container" aria-label="Fichality - Página inicial">
+                    <img src="img/logo.png"
+                         alt="Fichality"
+                         class="brand-logo">
+                </a>
+                <div class="character-meta">
+                    <input type="text" id="nomePersonagem" class="character-name-input" placeholder="Nome do Personagem" readonly>
+                    <span class="character-system-badge" id="sistemaRpg">Sistema</span>
+                </div>
+            </div>
+
+            <!-- Botões Superiores de Ação -->
+            <div class="editor-actions">
+                <button type="button" class="btn btn-outline" id="btnSair">Sair</button>
+                <button type="button" class="btn btn-primary" onclick="salvarEstruturaFicha()">
+                    💾 Salvar no Banco
+                </button>
+            </div>
+        </header>
+
+        <!-- Área de Trabalho (Sidebar + Canvas da Ficha) -->
+        <div class="editor-workspace">
+            <aside class="editor-sidebar">
+                <h3 class="sidebar-title">Ações da Ficha</h3>
+                <div class="block-presets">
+                    <button type="button" class="btn-preset" onclick="adicionarBloco()">
+                        <span>+ Novo Bloco Dinâmico</span>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Container Principal onde os blocos dinâmicos são inseridos -->
+            <main class="sheet-canvas" id="blocosContainer"></main>
+        </div>
+    </div>
+
+    <script src="js/editor.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => carregarFichaPorId(1));
+    </script>
+</body>
+</html>
