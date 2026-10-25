@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#6d0c0c">
+    <title>Campanhas — Fichality</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/gestao.css">
+    <script src="/js/auth.js" defer></script>
+</head>
+<body class="manage-page">
+    <header class="manage-header">
+        <a href="/home.html" class="manage-logo" aria-label="Fichality — início"><img src="/img/logo.png" alt="Fichality"></a>
+        <nav aria-label="Navegação principal">
+            <a href="/home.html">Início</a>
+            <a href="/home.html#recentes">Minhas fichas</a>
+            <a href="/sistemas.html">Sistemas e itens</a>
+            <a href="/campanhas.html" aria-current="page">Campanhas</a>
+            <button type="button" id="btnSair" class="btn btn-outline">Sair</button>
+        </nav>
+    </header>
+
+    <main class="manage-main">
+        <div class="page-title"><div><span class="eyebrow">MESTRE DE JOGO</span><h1>Minhas campanhas</h1><p>Organize uma mesa, escolha um sistema, registre house rules e vincule suas fichas.</p></div></div>
+        <p id="campanhaAviso" class="manage-message" role="alert"></p>
+        <div class="manage-layout">
+            <section class="manage-card">
+                <h2 id="campanhaFormTitulo">Criar campanha</h2>
+                <form id="formCampanha">
+                    <input type="hidden" id="campanhaId">
+                    <label for="campanhaNome">Nome da campanha<input id="campanhaNome" maxlength="120" required></label>
+                    <label for="campanhaSistema">Sistema de RPG<select id="campanhaSistema" required><option value="">Carregando sistemas...</option></select></label>
+                    <label for="campanhaDescricao">Descrição<textarea id="campanhaDescricao" rows="3"></textarea></label>
+                    <label for="campanhaStatus">Status<select id="campanhaStatus"><option>Preparação</option><option>Ativa</option><option>Pausada</option><option>Concluída</option></select></label>
+                    <label for="campanhaRules">House rules (JSON)<textarea id="campanhaRules" rows="8" required spellcheck="false">[]</textarea></label>
+                    <p class="hint">Comece com []. Exemplo: [{"titulo":"Descanso curto","descricao":"Recupera parte dos recursos.","tipo":"Descritiva"}].</p>
+                    <div class="form-actions"><button class="btn btn-primary" type="submit">Salvar campanha</button><button class="btn btn-outline" id="limparCampanha" type="button">Nova campanha</button></div>
+                </form>
+            </section>
+            <section class="manage-card"><h2>Campanhas cadastradas</h2><div id="listaCampanhas" class="manage-list"><p>Carregando campanhas...</p></div></section>
+        </div>
+
+        <section id="painelCampanha" class="manage-card hidden">
+            <div class="section-title-row"><div><span class="eyebrow">GERENCIAR CAMPANHA</span><h2 id="tituloPainelCampanha">Campanha</h2></div><button id="fecharPainelCampanha" class="btn btn-outline" type="button">Fechar</button></div>
+            <div class="manage-layout">
+                <section class="subpanel"><h3>Fichas vinculadas</h3><div class="form-actions"><select id="fichaParaAdicionar"><option value="">Selecione uma ficha sua</option></select><button id="adicionarFichaCampanha" class="btn btn-primary" type="button">Adicionar</button></div><div id="fichasCampanha" class="manage-list"></div></section>
+                <section class="subpanel"><h3>Catálogo de itens do sistema</h3><p class="hint">Itens definidos para o sistema selecionado. Atribuir itens ao inventário do personagem será conectado depois.</p><div id="itensCampanha" class="manage-list"></div></section>
+            </div>
+        </section>
+    </main>
+    <script src="/js/campanhas.js" defer></script>
+</body>
+</html>

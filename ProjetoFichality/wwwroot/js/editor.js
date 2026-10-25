@@ -1,139 +1,297 @@
-﻿// Estado global da ficha no Front-End
+/* ========================================================================
+   FICHALITY — EDITOR DINÂMICO
+   Compatível com FichaController e classes do editor.css
+   ======================================================================== */
+
 let fichaAtual = {
     id: null,
     nomePersonagem: "",
     sistemaRpg: "",
     blocos: []
 };
+let alteracoesPendentes = false;
 
-// 1. Carregar ficha existente do Banco via API (GET)
+const $ = id => document.getElementById(id);
+
+document.addEventListener("DOMContentLoaded", async () => {
+    const params = new URLSearchParams(window.location.search);
+    const id = Number(params.get("id"));
+    if (!Number.isInteger(id) || id < 1) {
+        window.location.replace("/home.html");
+        return;
+    }
+    const btnVisualizar = $("btnVisualizar");
+    if (btnVisualizar) btnVisualizar.href = `/visualizar-ficha.html?id=${encodeURIComponent(id)}`;
+    $("nomePersonagem")?.addEventListener("input", marcarAlteracao);
+    await carregarFichaPorId(id);
+});
+
+window.addEventListener("beforeunload", event => {
+    if (!alteracoesPendentes) return;
+    event.preventDefault();
+    event.returnValue = "";
+});
+
 async function carregarFichaPorId(id) {
     try {
-        const response = await fetch(`/api/ficha/${id}`);
-        if (!response.ok) throw new Error("Ficha não encontrada");
+        const response = await fetch(`/api/ficha/${encodeURIComponent(id)}`, {
+            credentials: "same-origin"
+        });
+        if (response.status === 401) {
+            window.location.replace("/index.html");
+            return;
+        }
+        if (!response.ok) throw new Error(await mensagemResposta(response, "Não foi possível carregar a ficha."));
 
         const data = await response.json();
         fichaAtual.id = data.id;
-        fichaAtual.nomePersonagem = data.nomePersonagem;
-        fichaAtual.sistemaRpg = data.sistemaRpg;
+        fichaAtual.nomePersonagem = data.nomePersonagem || "";
+        fichaAtual.sistemaRpg = data.sistemaRpg || "";
 
-        // Converte a string JSON armazenada na coluna NVARCHAR(MAX) em objeto JS
-        fichaAtual.blocos = JSON.parse(data.estruturaJson || "[]");
+        try {
+            fichaAtual.blocos = JSON.parse(data.estruturaJson || "[]");
+            if (!Array.isArray(fichaAtual.blocos)) fichaAtual.blocos = [];
+        } catch {
+            throw new Error("A estrutura JSON da ficha está inválida.");
+        }
 
-        document.getElementById('nomePersonagem').value = fichaAtual.nomePersonagem;
-        document.getElementById('sistemaRpg').value = fichaAtual.sistemaRpg;
-
+        $("nomePersonagem").value = fichaAtual.nomePersonagem;
+        const sistemaElement = $("sistemaRpg");
+        if (sistemaElement) {
+            if ("value" in sistemaElement) sistemaElement.value = fichaAtual.sistemaRpg;
+            else sistemaElement.textContent = fichaAtual.sistemaRpg || "Sistema não informado";
+        }
         renderizarEditor();
-    } catch (err) {
-        console.error("Erro ao carregar ficha:", err);
+        alteracoesPendentes = false;
+        atualizarStatus("Ficha carregada.", false);
+    } catch (error) {
+        console.error("Erro ao carregar ficha:", error);
+        atualizarStatus(error.message || "Erro ao carregar a ficha.", true);
     }
 }
 
-// 2. Renderizar a árvore de blocos e campos no DOM
 function renderizarEditor() {
-    const container = document.getElementById('blocosContainer');
+    const container = $("blocosContainer");
     if (!container) return;
+    container.replaceChildren();
 
-    container.innerHTML = '';
+    if (fichaAtual.blocos.length === 0) {
+        const vazio = document.createElement("div");
+        vazio.className = "empty-state";
+        const titulo = document.createElement("h3");
+        titulo.textContent = "Sua ficha começa aqui";
+        const texto = document.createElement("p");
+        texto.textContent = "Adicione um bloco para começar a organizar os atributos, habilidades e informações do personagem.";
+        vazio.append(titulo, texto);
+        container.appendChild(vazio);
+        return;
+    }
 
     fichaAtual.blocos.forEach((bloco, bIndex) => {
-        const blocoEl = document.createElement('div');
-        blocoEl.className = 'bloco-card';
-        blocoEl.innerHTML = `
-            <div class="bloco-header">
-                <input type="text" class="input-titulo" value="${bloco.titulo || ''}" 
-                    onchange="atualizarTituloBloco(${bIndex}, this.value)" placeholder="Título do Bloco">
-                <div class="bloco-acoes">
-                    <button type="button" onclick="moverBloco(${bIndex}, -1)">▲</button>
-                    <button type="button" onclick="moverBloco(${bIndex}, 1)">▼</button>
-                    <button type="button" class="btn-del" onclick="removerBloco(${bIndex})">Excluir</button>
-                </div>
-            </div>
-            <div class="campos-container">
-                ${(bloco.campos || []).map((campo, cIndex) => `
-                    <div class="campo-linha">
-                        <input type="text" value="${campo.chave || ''}" 
-                            onchange="atualizarCampo(${bIndex}, ${cIndex}, 'chave', this.value)" placeholder="Nome (ex: Força)">
-                        <input type="text" value="${campo.valor || ''}" 
-                            onchange="atualizarCampo(${bIndex}, ${cIndex}, 'valor', this.value)" placeholder="Valor (ex: 18)">
-                        <button type="button" class="btn-del-sm" onclick="removerCampo(${bIndex}, ${cIndex})">×</button>
-                    </div>
-                `).join('')}
-            </div>
-            <button type="button" class="btn-add-sm" onclick="adicionarCampo(${bIndex})">+ Adicionar Campo</button>
-        `;
+        if (!Array.isArray(bloco.campos)) bloco.campos = [];
+        const blocoEl = document.createElement("section");
+        blocoEl.className = "bloco-card";
+
+        const header = document.createElement("div");
+        header.className = "bloco-header";
+
+        const titulo = document.createElement("input");
+        titulo.type = "text";
+        titulo.className = "input-titulo";
+        titulo.placeholder = "Título do bloco";
+        titulo.value = bloco.titulo || "";
+        titulo.setAttribute("aria-label", `Título do bloco ${bIndex + 1}`);
+        titulo.addEventListener("input", () => {
+            fichaAtual.blocos[bIndex].titulo = titulo.value;
+            marcarAlteracao();
+        });
+
+        const acoes = document.createElement("div");
+        acoes.className = "bloco-acoes";
+        const subir = criarBotao("▲", "Mover bloco para cima", () => moverBloco(bIndex, -1));
+        const descer = criarBotao("▼", "Mover bloco para baixo", () => moverBloco(bIndex, 1));
+        const excluir = criarBotao("Excluir", "Excluir bloco", () => removerBloco(bIndex));
+        excluir.classList.add("btn-del");
+        subir.disabled = bIndex === 0;
+        descer.disabled = bIndex === fichaAtual.blocos.length - 1;
+        acoes.append(subir, descer, excluir);
+        header.append(titulo, acoes);
+
+        const camposContainer = document.createElement("div");
+        camposContainer.className = "campos-container";
+
+        bloco.campos.forEach((campo, cIndex) => {
+            const linha = document.createElement("div");
+            linha.className = "campo-linha";
+
+            const chave = document.createElement("input");
+            chave.type = "text";
+            chave.placeholder = "Nome (ex.: Força)";
+            chave.value = campo.chave || "";
+            chave.setAttribute("aria-label", `Nome do campo ${cIndex + 1}`);
+            chave.addEventListener("input", () => {
+                fichaAtual.blocos[bIndex].campos[cIndex].chave = chave.value;
+                marcarAlteracao();
+            });
+
+            const valor = document.createElement("input");
+            valor.type = "text";
+            valor.placeholder = "Valor (ex.: 18)";
+            valor.value = campo.valor ?? "";
+            valor.setAttribute("aria-label", `Valor do campo ${cIndex + 1}`);
+            valor.addEventListener("input", () => {
+                fichaAtual.blocos[bIndex].campos[cIndex].valor = valor.value;
+                marcarAlteracao();
+            });
+
+            const remover = criarBotao("×", "Remover campo", () => removerCampo(bIndex, cIndex));
+            remover.className = "btn-del-sm";
+            linha.append(chave, valor, remover);
+            camposContainer.appendChild(linha);
+        });
+
+        const adicionar = document.createElement("button");
+        adicionar.type = "button";
+        adicionar.className = "btn-add-sm";
+        adicionar.textContent = "+ Adicionar Campo";
+        adicionar.addEventListener("click", () => adicionarCampo(bIndex));
+
+        blocoEl.append(header, camposContainer, adicionar);
         container.appendChild(blocoEl);
     });
 }
 
-// 3. Manipulação de Blocos e Campos em Memória
+function criarBotao(texto, ariaLabel, handler) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = texto;
+    button.setAttribute("aria-label", ariaLabel);
+    button.addEventListener("click", handler);
+    return button;
+}
+
 function adicionarBloco() {
     fichaAtual.blocos.push({
         titulo: "Novo Bloco",
         campos: [{ chave: "Campo", valor: "Valor" }]
     });
     renderizarEditor();
+    marcarAlteracao();
 }
 
 function removerBloco(index) {
+    if (!confirm("Excluir este bloco e todos os seus campos?")) return;
     fichaAtual.blocos.splice(index, 1);
     renderizarEditor();
+    marcarAlteracao();
 }
 
 function moverBloco(index, direcao) {
     const novoIndex = index + direcao;
     if (novoIndex < 0 || novoIndex >= fichaAtual.blocos.length) return;
-    const temp = fichaAtual.blocos[index];
-    fichaAtual.blocos[index] = fichaAtual.blocos[novoIndex];
-    fichaAtual.blocos[novoIndex] = temp;
+    [fichaAtual.blocos[index], fichaAtual.blocos[novoIndex]] =
+        [fichaAtual.blocos[novoIndex], fichaAtual.blocos[index]];
     renderizarEditor();
-}
-
-function atualizarTituloBloco(index, valor) {
-    fichaAtual.blocos[index].titulo = valor;
+    marcarAlteracao();
 }
 
 function adicionarCampo(bIndex) {
-    if (!fichaAtual.blocos[bIndex].campos) fichaAtual.blocos[bIndex].campos = [];
+    if (!Array.isArray(fichaAtual.blocos[bIndex].campos)) {
+        fichaAtual.blocos[bIndex].campos = [];
+    }
     fichaAtual.blocos[bIndex].campos.push({ chave: "", valor: "" });
     renderizarEditor();
-}
-
-function atualizarCampo(bIndex, cIndex, prop, valor) {
-    fichaAtual.blocos[bIndex].campos[cIndex][prop] = valor;
+    marcarAlteracao();
 }
 
 function removerCampo(bIndex, cIndex) {
     fichaAtual.blocos[bIndex].campos.splice(cIndex, 1);
     renderizarEditor();
+    marcarAlteracao();
 }
 
-// 4. Salvar a estrutura serializada em JSON no SQL Server (PUT)
+function marcarAlteracao() {
+    alteracoesPendentes = true;
+    atualizarStatus("Alterações não salvas", true);
+}
+
+function atualizarStatus(mensagem, erro) {
+    // Se a página ainda não tem indicador de status, usa console como fallback.
+    const status = $("saveStatusText");
+    if (status) status.textContent = mensagem;
+    else if (erro) console.warn(mensagem);
+}
+
 async function salvarEstruturaFicha() {
     if (!fichaAtual.id) {
-        alert("Carregue ou crie uma ficha antes de salvar.");
+        alert("Carregue uma ficha antes de salvar.");
         return;
     }
 
-    const payload = {
-        fichaId: fichaAtual.id,
-        estruturaJson: JSON.stringify(fichaAtual.blocos)
-    };
+    const nomePersonagem = $("nomePersonagem")?.value.trim();
+    if (!nomePersonagem) {
+        alert("Informe o nome do personagem.");
+        return;
+    }
+
+    const botaoSalvar = Array.from(document.querySelectorAll("button"))
+        .find(button => button.textContent.includes("Salvar no Banco"));
+    if (botaoSalvar) { botaoSalvar.disabled = true; botaoSalvar.textContent = "Salvando..."; }
 
     try {
-        const response = await fetch('/api/ficha/salvar-estrutura', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+        // Salva os metadados editáveis primeiro.
+        const dadosResponse = await fetch(`/api/ficha/${fichaAtual.id}`, {
+            method: "PUT",
+            credentials: "same-origin",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                nomePersonagem,
+                sistemaRpg: fichaAtual.sistemaRpg
+            })
         });
+        if (!dadosResponse.ok) throw new Error(await mensagemResposta(dadosResponse, "Não foi possível salvar os dados básicos."));
 
-        const resultado = await response.json();
-        if (response.ok) {
-            alert("Estrutura da ficha salva no SQL Server com sucesso!");
-        } else {
-            alert("Erro ao salvar: " + (resultado.mensagem || "Erro na requisição."));
-        }
-    } catch (err) {
-        console.error("Erro ao conectar com a API:", err);
+        // Salva a estrutura dinâmica em JSON.
+        const estruturaResponse = await fetch("/api/ficha/salvar-estrutura", {
+            method: "PUT",
+            credentials: "same-origin",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                fichaId: fichaAtual.id,
+                estruturaJson: JSON.stringify(fichaAtual.blocos)
+            })
+        });
+        if (!estruturaResponse.ok) throw new Error(await mensagemResposta(estruturaResponse, "Não foi possível salvar a estrutura."));
+
+        fichaAtual.nomePersonagem = nomePersonagem;
+        alteracoesPendentes = false;
+        atualizarStatus("Todas as alterações foram salvas.", false);
+        alert("Ficha salva com sucesso!");
+    } catch (error) {
+        console.error("Erro ao salvar ficha:", error);
+        alert(error.message || "Erro ao salvar a ficha.");
+    } finally {
+        if (botaoSalvar) { botaoSalvar.disabled = false; botaoSalvar.textContent = "💾 Salvar no Banco"; }
     }
 }
+
+async function mensagemResposta(response, fallback) {
+    const texto = await response.text();
+    if (!texto) return `${fallback} (HTTP ${response.status})`;
+    try {
+        const dados = JSON.parse(texto);
+        return dados.mensagem || dados.title || dados.detail || fallback;
+    } catch {
+        return texto;
+    }
+}
+
+// Expostas para manter compatibilidade com o onclick do HTML existente.
+window.carregarFichaPorId = carregarFichaPorId;
+window.renderizarEditor = renderizarEditor;
+window.adicionarBloco = adicionarBloco;
+window.removerBloco = removerBloco;
+window.moverBloco = moverBloco;
+window.adicionarCampo = adicionarCampo;
+window.removerCampo = removerCampo;
+window.salvarEstruturaFicha = salvarEstruturaFicha;

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#6d0c0c">
+    <title>Visualizar ficha — Fichality</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/visualizar-ficha.css">
+    <script src="/js/auth.js" defer></script>
+</head>
+<body class="view-page">
+    <header class="view-header">
+        <a href="/home.html" class="view-brand" aria-label="Fichality — início"><img src="/img/logo.png" alt="Fichality"></a>
+        <nav class="view-nav" aria-label="Navegação principal">
+            <a href="/home.html">Início</a>
+            <a href="/sistemas.html">Sistemas e itens</a>
+            <a href="/campanhas.html">Campanhas</a>
+        </nav>
+        <div class="view-actions">
+            <a class="btn btn-outline" href="/home.html">Voltar às fichas</a>
+            <a class="btn btn-primary" id="btnEditar" href="/home.html">Editar ficha</a>
+            <button class="btn btn-danger" id="btnExcluir" type="button">Excluir</button>
+            <button class="btn btn-dark" id="btnSair" type="button">Sair</button>
+        </div>
+    </header>
+    <main class="view-main">
+        <section class="view-intro"><span class="eyebrow">FICHA DE PERSONAGEM</span><h1 id="nomePersonagem">Carregando ficha...</h1><p id="sistemaRpg"></p></section>
+        <div id="viewContent" class="view-content"><p class="view-message">Carregando ficha...</p></div>
+        <p id="viewError" class="view-error" role="alert"></p>
+    </main>
+    <script src="/js/visualizar-ficha.js" defer></script>
+</body>
+</html>

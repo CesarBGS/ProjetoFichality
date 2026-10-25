@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#6d0c0c">
+    <title>Sistemas e itens — Fichality</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/gestao.css">
+    <script src="/js/auth.js" defer></script>
+</head>
+<body class="manage-page">
+    <header class="manage-header">
+        <a href="/home.html" class="manage-logo" aria-label="Fichality — início"><img src="/img/logo.png" alt="Fichality"></a>
+        <nav aria-label="Navegação principal">
+            <a href="/home.html">Início</a>
+            <a href="/home.html#recentes">Minhas fichas</a>
+            <a href="/campanhas.html">Campanhas</a>
+            <button type="button" id="btnSair" class="btn btn-outline">Sair</button>
+        </nav>
+    </header>
+
+    <main class="manage-main">
+        <div class="page-title"><div><span class="eyebrow">BIBLIOTECA PESSOAL</span><h1>Sistemas de RPG</h1><p>Crie sistemas, defina modelos de ficha e gerencie o catálogo de itens de cada sistema.</p></div></div>
+        <p id="sistemaAviso" class="manage-message" role="alert"></p>
+
+        <div class="manage-layout">
+            <section class="manage-card">
+                <h2 id="sistemaFormTitulo">Cadastrar sistema</h2>
+                <form id="formSistema">
+                    <label for="sysNome">Nome<input id="sysNome" maxlength="120" required></label>
+                    <label for="sysVersao">Versão<input id="sysVersao" maxlength="50" value="1.0"></label>
+                    <label for="sysDescricao">Descrição<textarea id="sysDescricao" rows="3"></textarea></label>
+                    <label for="sysLore">Lore / ambientação<textarea id="sysLore" rows="4"></textarea></label>
+                    <label for="sysRegras">Regras básicas<textarea id="sysRegras" rows="4"></textarea></label>
+                    <label class="check-row" for="sysPublico"><input id="sysPublico" type="checkbox"> Publicar na biblioteca</label>
+                    <label class="check-row" for="sysPermiteCopia"><input id="sysPermiteCopia" type="checkbox"> Permitir que outros usuários copiem o sistema</label>
+                    <div class="form-actions"><button class="btn btn-primary" type="submit">Salvar sistema</button><button class="btn btn-outline" id="cancelarEdicaoSistema" type="button">Limpar</button></div>
+                </form>
+            </section>
+
+            <section class="manage-card">
+                <h2>Meus sistemas e biblioteca</h2>
+                <p class="hint">Selecione um sistema para gerenciar seus modelos de ficha e itens.</p>
+                <div id="listaSistemas" class="manage-list"><p>Carregando sistemas...</p></div>
+            </section>
+        </div>
+
+        <section id="painelSistema" class="manage-card hidden">
+            <div class="section-title-row"><div><span class="eyebrow">GERENCIAR SISTEMA</span><h2 id="nomeSistemaSelecionado">Sistema</h2></div><button id="fecharPainelSistema" class="btn btn-outline" type="button">Fechar</button></div>
+            <div class="manage-layout">
+                <section class="subpanel">
+                    <h3>Modelos de ficha</h3>
+                    <form id="formModelo">
+                        <input id="modeloId" type="hidden">
+                        <label for="modeloNome">Nome do modelo<input id="modeloNome" maxlength="120" required></label>
+                        <label for="modeloDescricao">Descrição<textarea id="modeloDescricao" rows="2"></textarea></label>
+                        <label for="modeloJson">Estrutura JSON<textarea id="modeloJson" rows="8" required spellcheck="false">[{"titulo":"Atributos","campos":[{"chave":"Força","valor":"10"},{"chave":"Destreza","valor":"10"}]}]</textarea></label>
+                        <label class="check-row" for="modeloPadrao"><input id="modeloPadrao" type="checkbox"> Modelo padrão deste sistema</label>
+                        <p class="hint">Use uma lista JSON de blocos; cada bloco contém título e campos.</p>
+                        <div class="form-actions"><button class="btn btn-primary" type="submit">Salvar modelo</button><button class="btn btn-outline" id="limparModelo" type="button">Novo modelo</button></div>
+                    </form>
+                    <div id="listaModelos" class="manage-list"></div>
+                </section>
+                <section class="subpanel">
+                    <h3>Itens do sistema</h3>
+                    <form id="formItem">
+                        <input id="itemId" type="hidden">
+                        <label for="itemNome">Nome do item<input id="itemNome" maxlength="120" required></label>
+                        <label for="itemCategoria">Categoria<input id="itemCategoria" maxlength="60" value="Geral"></label>
+                        <label for="itemDescricao">Descrição<textarea id="itemDescricao" rows="2"></textarea></label>
+                        <div class="form-grid-two"><label for="itemCusto">Custo / moeda<input id="itemCusto" maxlength="80" placeholder="Ex.: 10 PO, 2 créditos"></label><label for="itemPeso">Peso<input id="itemPeso" type="number" min="0" step="0.01"></label></div>
+                        <label for="itemPropriedades">Propriedades JSON<textarea id="itemPropriedades" rows="4" required spellcheck="false">{}</textarea></label>
+                        <label for="itemEfeitos">Efeitos JSON<textarea id="itemEfeitos" rows="4" required spellcheck="false">[]</textarea></label>
+                        <label class="check-row" for="itemAtivo"><input id="itemAtivo" type="checkbox" checked> Item disponível</label>
+                        <p class="hint">Os efeitos ficam cadastrados como dados. Eles ainda não alteram automaticamente atributos ou cálculos da ficha.</p>
+                        <div class="form-actions"><button class="btn btn-primary" type="submit">Salvar item</button><button class="btn btn-outline" id="limparItem" type="button">Novo item</button></div>
+                    </form>
+                    <div id="listaItens" class="manage-list"></div>
+                </section>
+            </div>
+        </section>
+    </main>
+    <script src="/js/sistemas.js" defer></script>
+</body>
+</html>

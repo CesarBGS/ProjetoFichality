@@ -1,0 +1,30 @@
+/* ==========================================================================
+   FICHALITY — VISUALIZAÇÃO DE FICHA (somente leitura)
+   ========================================================================== */
+.view-page { min-height: 100vh; background: #f8f6f2; color: #292321; }
+.view-header { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 13px clamp(16px,4vw,52px); background: rgba(255,255,255,.97); border-bottom: 1px solid #e7ddd4; box-shadow: 0 3px 12px rgba(62,4,4,.035); }
+.view-brand { display: inline-flex; align-items: center; flex-shrink: 0; }
+.view-brand img { display: block; width: 170px; max-width: 100%; height: auto; object-fit: contain; }
+.view-nav { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 17px; }
+.view-nav a { color: #6d0c0c; font-size: .8rem; font-weight: 800; text-decoration: none; white-space: nowrap; }
+.view-nav a:hover { text-decoration: underline; text-underline-offset: 4px; }
+.view-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }
+.view-actions .btn { min-height: 37px; padding: 9px 12px; font-size: .73rem; }
+.btn-danger { color: #fff; background: #a12626; border: 1px solid #a12626; }
+.btn-danger:hover { background: #831d1d; }
+.view-main { width: min(1100px,calc(100% - 40px)); margin: 0 auto; padding: 38px 0 68px; }
+.view-intro { padding: 0 0 24px; border-bottom: 1px solid #e3d7ce; }
+.view-intro h1 { color: #292321; font-size: clamp(1.85rem,4vw,2.7rem); line-height: 1.15; letter-spacing: -.65px; overflow-wrap: anywhere; }
+.view-intro p { margin-top: 9px; color: #786b63; font-size: .9rem; }
+.view-content { display: flex; flex-direction: column; gap: 22px; padding-top: 26px; }
+.view-block { overflow: hidden; background: #fff; border: 1px solid #e5d9cf; border-radius: 11px; box-shadow: 0 4px 14px rgba(62,4,4,.055); }
+.view-block h2 { padding: 15px 19px; color: #fff; background: #6d0c0c; font-size: 1.04rem; font-weight: 800; line-height: 1.4; overflow-wrap: anywhere; }
+.view-fields { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,220px),1fr)); gap: 13px; padding: 19px; }
+.view-field { min-width: 0; padding: 14px; background: #faf8f5; border: 1px solid #eee4dc; border-radius: 8px; }
+.view-field dt { margin-bottom: 7px; color: #786b63; font-size: .7rem; font-weight: 800; letter-spacing: .65px; text-transform: uppercase; overflow-wrap: anywhere; }
+.view-field dd { color: #292321; font-size: 1.03rem; font-weight: 650; line-height: 1.55; overflow-wrap: anywhere; white-space: pre-wrap; }
+.view-message, .view-empty { padding: 30px; color: #786b63; background: #fff; border: 1px dashed #e5d9cf; border-radius: 10px; line-height: 1.7; text-align: center; }
+.view-error { margin-top: 15px; padding: 0; color: #a32222; font-size: .88rem; line-height: 1.6; white-space: pre-wrap; }
+.view-error:empty { display: none; }
+@media (max-width: 1100px) { .view-header { flex-wrap: wrap; } .view-nav { order: 3; width: 100%; } .view-actions { margin-left: auto; } }
+@media (max-width: 650px) { .view-header { align-items: flex-start; flex-direction: column; padding: 13px 18px; } .view-brand img { width: 145px; } .view-nav { order: 0; width: 100%; } .view-actions { width: 100%; margin-left: 0; justify-content: flex-start; } .view-actions .btn { flex: 1 1 auto; } .view-main { width: min(100% - 24px,560px); padding: 26px 0 48px; } .view-content { gap: 16px; padding-top: 18px; } .view-fields { grid-template-columns: minmax(0,1fr); padding: 12px; } }

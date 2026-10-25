@@ -1,69 +1,59 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fichality - Editor de Ficha</title>
-
-    <!-- Estilos com caminhos relativos -->
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/editor.css">
-
-    <!-- Guard de Autenticação -->
-    <script src="js/auth.js"></script>
+    <meta name="theme-color" content="#6d0c0c">
+    <title>Editar ficha — Fichality</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/editor.css">
+    <script src="/js/auth.js" defer></script>
 </head>
-<body>
+<body class="editor-page">
     <div class="app-container">
-        <!-- Header do Editor -->
         <header class="editor-header">
             <div class="editor-header-left">
-                <a href="index.html" class="brand-container" aria-label="Fichality - Página inicial">
-                    <img src="img/logo.png"
-                         alt="Fichality"
-                         class="brand-logo">
-                </a>
+                <a href="/home.html" class="brand-container" aria-label="Voltar ao Fichality"><img src="/img/logo.png" alt="Fichality" class="brand-logo"></a>
                 <div class="character-meta">
-                    <input type="text" id="nomePersonagem" class="character-name-input" placeholder="Nome do Personagem" readonly>
-                    <span class="character-system-badge" id="sistemaRpg">Sistema</span>
+                    <input type="text" id="nomePersonagem" class="character-name-input" placeholder="Nome do personagem" maxlength="100">
+                    <span class="character-system-badge" id="sistemaRpg">Sistema não informado</span>
                 </div>
             </div>
-
-            <!-- Botões Superiores de Ação -->
+            <nav class="editor-nav" aria-label="Navegação da conta">
+                <a href="/home.html">Início</a>
+                <a href="/sistemas.html">Sistemas e itens</a>
+                <a href="/campanhas.html">Campanhas</a>
+            </nav>
             <div class="editor-actions">
-                <button type="button" class="btn btn-outline" id="btnSair">Sair</button>
-                <button type="button" class="btn btn-primary" onclick="salvarEstruturaFicha()">
-                    💾 Salvar no Banco
-                </button>
+                <span class="save-status" id="saveStatusText" role="status" aria-live="polite">Carregando ficha...</span>
+                <a class="btn btn-outline" id="btnVisualizar" href="/home.html">Visualizar</a>
+                <button type="button" class="btn btn-dark" id="btnSair">Sair</button>
+                <button type="button" class="btn btn-primary" id="btnSalvarFicha" onclick="salvarEstruturaFicha()">💾 Salvar no Banco</button>
             </div>
         </header>
 
-        <!-- Área de Trabalho (Sidebar + Canvas da Ficha) -->
         <div class="editor-workspace">
             <aside class="editor-sidebar">
-                <h3 class="sidebar-title">Ações da Ficha</h3>
-                <div class="block-presets">
-                    <button type="button" class="btn-preset" onclick="adicionarBloco()">
-                        <span>+ Novo Bloco Dinâmico</span>
-                    </button>
-                </div>
+                <h2 class="sidebar-title">Ações da ficha</h2>
+                <div class="block-presets"><button type="button" class="btn-preset" onclick="adicionarBloco()"><span>＋ Novo bloco dinâmico</span></button></div>
+                <div class="sidebar-note"><strong>Dica</strong><p>Organize a ficha por blocos. Salve as alterações antes de sair.</p></div>
             </aside>
-
-            <!-- Container Principal onde os blocos dinâmicos são inseridos -->
-            <main class="sheet-canvas" id="blocosContainer"></main>
+            <main class="sheet-canvas" id="blocosContainer" aria-label="Blocos da ficha"></main>
         </div>
     </div>
 
-    <script src="js/editor.js"></script>
+    <script src="/js/editor.js" defer></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            const parametros = new URLSearchParams(window.location.search);
-            const id = Number(parametros.get("id"));
-
-            if (Number.isInteger(id) && id > 0) {
-                carregarFichaPorId(id);
-            } else {
-                window.location.replace("home.html");
+            const params = new URLSearchParams(window.location.search);
+            const id = Number(params.get("id"));
+            const btnVisualizar = document.getElementById("btnVisualizarFicha");
+            if (!Number.isInteger(id) || id <= 0) {
+                window.location.replace("/home.html");
+                return;
             }
+            btnVisualizar.href = `/visualizar-ficha.html?id=${encodeURIComponent(id)}`;
+            if (typeof carregarFichaPorId === "function") carregarFichaPorId(id);
         });
     </script>
 </body>

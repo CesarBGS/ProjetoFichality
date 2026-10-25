@@ -1,187 +1,138 @@
-﻿/* ==========================================================================
-   FICHALITY - ESTILOS EXCLUSIVOS DA LANDING PAGE (landing.css)
+/* ==========================================================================
+   FICHALITY — LANDING PAGE
+   Identidade visual compartilhada: vinho, creme e grafite
    ========================================================================== */
 
-/* Header & Navbar */
+.landing-page { background: var(--bg-light); }
+
 .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: center;
-    padding: 0.8rem 4rem;
-    background-color: var(--bg-white);
-    border-bottom: 3px solid var(--brand-red);
+    gap: 28px;
+    padding: 10px clamp(18px, 5vw, 72px);
+    background: rgba(255,255,255,.97);
+    border-bottom: 2px solid var(--brand-red);
+    box-shadow: 0 3px 14px rgba(62,4,4,.045);
+    backdrop-filter: blur(10px);
 }
 
-.brand-container {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-}
+.brand-container { display: inline-flex; flex-shrink: 0; align-items: center; text-decoration: none; }
+.brand-logo { display: block; width: 184px; max-width: 100%; height: auto; object-fit: contain; transition: transform .2s ease; }
+.brand-container:hover .brand-logo { transform: scale(1.02); }
+.nav-menu { display: flex; align-items: center; justify-content: flex-end; gap: clamp(18px, 3vw, 38px); }
+.nav-links { display: flex; align-items: center; gap: clamp(14px, 2.2vw, 28px); list-style: none; }
+.nav-link { position: relative; color: var(--brand-red); font-size: .82rem; font-weight: 800; letter-spacing: .45px; text-decoration: none; text-transform: uppercase; }
+.nav-link::after { position: absolute; right: 0; bottom: -7px; left: 0; height: 2px; background: var(--brand-red); content: ""; transform: scaleX(0); transform-origin: left; transition: transform .2s ease; }
+.nav-link:hover::after, .nav-link:focus-visible::after { transform: scaleX(1); }
+.nav-buttons { display: flex; flex-wrap: wrap; gap: 9px; }
+.nav-buttons .btn { min-height: 40px; padding: 10px 15px; font-size: .78rem; }
 
-/* Imagem do Logo que substitui o texto */
-.brand-logo {
-    height: 70px; /* Ajuste de altura padrão para o cabeçalho */
-    width: auto; /* Mantém a proporção original */
-    max-width: 350px; /* Evita estouro de largura */
-    object-fit: contain;
-    display: block;
-    transition: transform 0.2s ease;
-}
-
-.brand-container:hover .brand-logo {
-    transform: scale(1.02); /* Leve efeito hover no logo */
-}
-
-.nav-menu {
-    display: flex;
-    align-items: center;
-    gap: 2.5rem;
-}
-
-.nav-links {
-    display: flex;
-    gap: 1.8rem;
-    list-style: none;
-}
-
-.nav-link {
-    color: var(--brand-red);
-    font-weight: 800;
-    text-transform: uppercase;
-    font-size: 0.9rem;
-    text-decoration: none;
-    letter-spacing: 0.5px;
-    position: relative;
-}
-
-    .nav-link:hover::after {
-        content: '';
-        position: absolute;
-        bottom: -4px;
-        left: 0;
-        width: 100%;
-        height: 2px;
-        background-color: var(--brand-red);
-        transform: scale(1.02); /* Leve efeito hover no logo */
-    }
-
-.nav-buttons {
-    display: flex;
-    gap: 0.8rem;
-}
-
-/* Seção Hero (Bem-Vindo) */
 .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(280px, .85fr);
+    align-items: center;
+    gap: clamp(32px, 6vw, 82px);
+    min-height: 470px;
+    padding: clamp(48px, 7vw, 88px) clamp(20px, 7vw, 100px);
     background-color: var(--bg-light);
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 4rem;
-    align-items: center;
-    min-height: 480px;
-    background-image: radial-gradient(rgba(0,0,0,0.03) 1px, transparent 1px);
-    background-size: 20px 20px;
+    background-image: radial-gradient(rgba(62,4,4,.055) 1px, transparent 1px);
+    background-size: 21px 21px;
 }
 
-.hero-content {
-    max-width: 520px;
-}
+.hero-content { max-width: 690px; }
+.eyebrow { display: block; margin-bottom: 12px; color: var(--brand-red); font-size: .72rem; font-weight: 800; letter-spacing: 1.5px; }
+.hero-title { max-width: 720px; margin-bottom: 18px; color: var(--brand-red); font-size: clamp(2.2rem, 5vw, 4.25rem); font-weight: 900; line-height: 1.04; letter-spacing: -1.5px; }
+.hero-title span { color: #2e2421; }
+.hero-text { max-width: 640px; color: var(--text-muted); font-size: 1.02rem; line-height: 1.8; }
+.nav-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 26px; }
+.nav-actions .btn { min-height: 45px; }
+.hero-proof { display: flex; flex-wrap: wrap; gap: 8px 17px; margin-top: 24px; color: #655650; font-size: .78rem; font-weight: 600; }
+.hero-proof span::first-letter { color: var(--success); }
 
-.hero-title {
-    color: var(--brand-red);
-    font-size: 3rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 0.8rem;
-}
-
-.hero-quote {
-    font-size: 1.4rem;
-    font-style: italic;
-    color: var(--text-dark);
-    font-family: Georgia, serif;
-    margin-bottom: 1.5rem;
-}
-
-.hero-text {
-    font-size: 0.95rem;
-    color: var(--text-muted);
-    line-height: 1.6;
-}
-
-.hero-media {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-    .hero-media img {
-        max-width: 100%;
-        height: auto;
-        opacity: 0.85;
-    }
-
-/* Seção Inferior (O Que É O Fichality?) */
-.about-section {
-    background-color: var(--brand-red-bg);
-    color: var(--text-light);
-    padding: 4rem;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
-}
-
-.about-info h2 {
-    font-size: 2.8rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    line-height: 1.1;
-    margin-bottom: 2rem;
-}
-
-.about-info p {
-    font-size: 1rem;
-    line-height: 1.6;
-    color: var(--text-light-muted);
-    max-width: 450px;
-}
-
-.features-column {
+.hero-aside {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    min-height: 330px;
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: clamp(26px, 4vw, 44px);
+    color: #fff;
+    background: linear-gradient(145deg, #7f1b1b 0%, #3e0404 78%);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 18px;
+    box-shadow: 0 24px 55px rgba(62,4,4,.18);
 }
+.hero-aside::before, .hero-aside::after { position: absolute; z-index: -1; border: 1px solid rgba(255,255,255,.13); border-radius: 50%; content: ""; }
+.hero-aside::before { top: -90px; right: -45px; width: 290px; height: 290px; }
+.hero-aside::after { top: -38px; right: 8px; width: 190px; height: 190px; }
+.hero-aside-mark { position: absolute; top: 25px; right: 34px; color: rgba(255,255,255,.18); font-size: 5rem; }
+.hero-aside-kicker { margin-bottom: 14px; color: #e6c8bd; font-size: .68rem; font-weight: 800; letter-spacing: 1.8px; }
+.hero-aside h2 { max-width: 390px; font-size: clamp(1.8rem, 3.3vw, 2.45rem); line-height: 1.12; }
+.hero-aside p { max-width: 400px; margin-top: 13px; color: #f0dfd8; font-size: .93rem; line-height: 1.7; }
+.hero-aside-lines { display: flex; gap: 7px; margin-top: 25px; }
+.hero-aside-lines span { display: block; width: 34px; height: 4px; background: #c28c7c; border-radius: 20px; }
+.hero-aside-lines span:nth-child(2) { width: 18px; opacity: .65; }
+.hero-aside-lines span:nth-child(3) { width: 9px; opacity: .4; }
 
-.feature-card {
-    background-color: var(--brand-red-dark);
-    border-radius: 8px;
-    padding: 1.25rem 1.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+.features-section { padding: clamp(48px, 7vw, 82px) clamp(20px, 7vw, 100px); background: #fff; }
+.section-intro { max-width: 750px; margin: 0 auto 32px; text-align: center; }
+.section-intro h2 { color: #2c211e; font-size: clamp(1.7rem, 3.4vw, 2.5rem); line-height: 1.18; }
+.section-intro p { max-width: 650px; margin: 12px auto 0; color: var(--text-muted); line-height: 1.75; }
+.features-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; max-width: 1240px; margin: 0 auto; }
+.feature-card { min-width: 0; padding: 25px; background: #fffdfb; border: 1px solid #e7ddd4; border-radius: 11px; box-shadow: 0 5px 16px rgba(62,4,4,.045); }
+.feature-number { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; margin-bottom: 18px; color: var(--brand-red); background: #f3e8e1; border-radius: 9px; font-size: .78rem; font-weight: 900; }
+.feature-card h3 { margin-bottom: 9px; color: #352622; font-size: 1.02rem; font-weight: 800; line-height: 1.35; }
+.feature-card p { color: var(--text-muted); font-size: .89rem; line-height: 1.7; }
+
+.about-section { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(28px, 6vw, 74px); padding: clamp(48px, 7vw, 82px) clamp(20px, 7vw, 100px); color: #fff; background: var(--brand-red-bg); }
+.eyebrow-light { color: #e6c8bd; }
+.about-info h2 { max-width: 480px; margin-bottom: 17px; font-size: clamp(2rem, 4vw, 3.15rem); font-weight: 900; line-height: 1.05; letter-spacing: -1px; }
+.about-info p { max-width: 520px; color: #eadcda; font-size: .97rem; line-height: 1.8; }
+.features-column { display: flex; flex-direction: column; gap: 13px; }
+.feature-card-dark { padding: 19px 22px; background: var(--brand-red-dark); border-color: rgba(255,255,255,.1); box-shadow: 0 5px 16px rgba(0,0,0,.12); }
+.feature-card-dark h3 { color: #fff; }
+.feature-card-dark p { color: #e2d8d8; }
+.landing-footer { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-top: auto; padding: 22px clamp(20px, 5vw, 72px); color: #e2d8d8; background: #1a0202; font-size: .8rem; }
+.landing-footer a { color: #f1ded8; font-weight: 700; text-decoration: none; }
+.landing-footer a:hover { text-decoration: underline; }
+
+/* Modais: espaçamento consistente com main.css */
+.modal-card { max-height: min(90vh, 760px); overflow-y: auto; }
+.modal-header h2 { text-transform: none; }
+.modal-close { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; }
+.modal-close:hover { color: var(--brand-red); background: #f8f1ec; }
+.modal-footer-text { line-height: 1.6; }
+.modal-footer-text a { text-decoration: none; }
+.modal-footer-text a:hover { text-decoration: underline; }
+
+@media (max-width: 980px) {
+    .navbar { flex-wrap: wrap; padding-inline: 24px; }
+    .nav-menu { flex: 1; flex-wrap: wrap; justify-content: flex-end; }
+    .hero { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+    .hero-aside { min-height: 250px; }
+    .features-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .about-section { grid-template-columns: 1fr; }
 }
-
-    .feature-card h3 {
-        color: var(--text-light);
-        font-size: 1.1rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        margin-bottom: 0.4rem;
-        letter-spacing: 0.5px;
-    }
-
-    .feature-card p {
-        color: var(--text-light-muted);
-        font-size: 0.875rem;
-        line-height: 1.4;
-        margin: 0;
-    }
-
-/* Rodapé */
-footer {
-    background-color: #1a0202;
-    color: var(--text-light-muted);
-    text-align: center;
-    padding: 1.25rem;
-    font-size: 0.8rem;
-    margin-top: auto; /* Garante alinhamento ao final da tela */
+@media (max-width: 650px) {
+    .navbar { position: relative; align-items: flex-start; flex-direction: column; gap: 12px; padding: 12px 18px 16px; }
+    .brand-logo { width: 155px; }
+    .nav-menu { width: 100%; justify-content: flex-start; align-items: flex-start; flex-direction: column; gap: 14px; }
+    .nav-links { flex-wrap: wrap; gap: 15px; }
+    .nav-buttons { width: 100%; }
+    .nav-buttons .btn { flex: 1; }
+    .hero { padding: 42px 20px; }
+    .hero-title { font-size: clamp(2rem, 10vw, 3.1rem); }
+    .hero-aside { min-height: 270px; }
+    .features-section, .about-section { padding: 42px 20px; }
+    .features-grid { grid-template-columns: 1fr; gap: 13px; }
+    .feature-card { padding: 21px; }
+    .landing-footer { align-items: flex-start; flex-direction: column; }
+    .modal-card { padding: 1.3rem; width: calc(100% - 28px); }
 }

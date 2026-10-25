@@ -22,6 +22,80 @@ namespace ProjetoFichality.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("ProjetoFichality.Models.Campanha", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DataAtualizacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DataCriacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HouseRulesJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MestreUsuarioId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<int>("SistemaRpgId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MestreUsuarioId");
+
+                    b.HasIndex("SistemaRpgId");
+
+                    b.ToTable("Campanhas");
+                });
+
+            modelBuilder.Entity("ProjetoFichality.Models.CampanhaFicha", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AdicionadaEm")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CampanhaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FichaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FichaId");
+
+                    b.HasIndex("CampanhaId", "FichaId")
+                        .IsUnique();
+
+                    b.ToTable("CampanhasFichas");
+                });
+
             modelBuilder.Entity("ProjetoFichality.Models.Destaque", b =>
                 {
                     b.Property<int>("Id")
@@ -127,6 +201,62 @@ namespace ProjetoFichality.Migrations
                     b.ToTable("Fichas");
                 });
 
+            modelBuilder.Entity("ProjetoFichality.Models.ItemSistemaRpg", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Ativo")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Categoria")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<string>("Custo")
+                        .HasMaxLength(80)
+                        .HasColumnType("nvarchar(80)");
+
+                    b.Property<DateTime>("DataAtualizacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DataCriacao")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EfeitosJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<decimal?>("Peso")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("PropriedadesJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SistemaRpgId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SistemaRpgId");
+
+                    b.ToTable("ItensSistemaRpg");
+                });
+
             modelBuilder.Entity("ProjetoFichality.Models.ModeloFicha", b =>
                 {
                     b.Property<int>("Id")
@@ -141,6 +271,9 @@ namespace ProjetoFichality.Migrations
                     b.Property<string>("Descricao")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("EhPadrao")
+                        .HasColumnType("bit");
 
                     b.Property<string>("EstruturaJson")
                         .IsRequired()
@@ -256,6 +389,44 @@ namespace ProjetoFichality.Migrations
                     b.ToTable("Usuarios");
                 });
 
+            modelBuilder.Entity("ProjetoFichality.Models.Campanha", b =>
+                {
+                    b.HasOne("ProjetoFichality.Models.Usuario", "MestreUsuario")
+                        .WithMany()
+                        .HasForeignKey("MestreUsuarioId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("ProjetoFichality.Models.SistemaRpg", "SistemaRpg")
+                        .WithMany("Campanhas")
+                        .HasForeignKey("SistemaRpgId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("MestreUsuario");
+
+                    b.Navigation("SistemaRpg");
+                });
+
+            modelBuilder.Entity("ProjetoFichality.Models.CampanhaFicha", b =>
+                {
+                    b.HasOne("ProjetoFichality.Models.Campanha", "Campanha")
+                        .WithMany("Participantes")
+                        .HasForeignKey("CampanhaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ProjetoFichality.Models.Ficha", "Ficha")
+                        .WithMany("Campanhas")
+                        .HasForeignKey("FichaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Campanha");
+
+                    b.Navigation("Ficha");
+                });
+
             modelBuilder.Entity("ProjetoFichality.Models.Destaque", b =>
                 {
                     b.HasOne("ProjetoFichality.Models.ModeloFicha", "ModeloFicha")
@@ -298,6 +469,17 @@ namespace ProjetoFichality.Migrations
                     b.Navigation("Usuario");
                 });
 
+            modelBuilder.Entity("ProjetoFichality.Models.ItemSistemaRpg", b =>
+                {
+                    b.HasOne("ProjetoFichality.Models.SistemaRpg", "SistemaRpg")
+                        .WithMany("Itens")
+                        .HasForeignKey("SistemaRpgId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SistemaRpg");
+                });
+
             modelBuilder.Entity("ProjetoFichality.Models.ModeloFicha", b =>
                 {
                     b.HasOne("ProjetoFichality.Models.SistemaRpg", "SistemaRpg")
@@ -327,6 +509,16 @@ namespace ProjetoFichality.Migrations
                     b.Navigation("SistemaOrigem");
                 });
 
+            modelBuilder.Entity("ProjetoFichality.Models.Campanha", b =>
+                {
+                    b.Navigation("Participantes");
+                });
+
+            modelBuilder.Entity("ProjetoFichality.Models.Ficha", b =>
+                {
+                    b.Navigation("Campanhas");
+                });
+
             modelBuilder.Entity("ProjetoFichality.Models.ModeloFicha", b =>
                 {
                     b.Navigation("Fichas");
@@ -334,9 +526,13 @@ namespace ProjetoFichality.Migrations
 
             modelBuilder.Entity("ProjetoFichality.Models.SistemaRpg", b =>
                 {
+                    b.Navigation("Campanhas");
+
                     b.Navigation("Copias");
 
                     b.Navigation("Fichas");
+
+                    b.Navigation("Itens");
 
                     b.Navigation("Modelos");
                 });

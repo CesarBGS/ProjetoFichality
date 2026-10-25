@@ -1,181 +1,196 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fichality - Gerenciador Dinâmico de Fichas de RPG</title>
-
-    <!-- Estilos CSS Modularizados -->
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/landing.css">
-
-    <!-- Script de Autenticação -->
-    <script src="js/auth.js"></script>
+    <meta name="theme-color" content="#6d0c0c">
+    <title>Fichality — Gerenciador de fichas de RPG</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/landing.css">
+    <script src="/js/auth.js" defer></script>
 </head>
-<body>
-
-    <!-- Navbar -->
+<body class="landing-page">
     <header class="navbar">
-        <a href="index.html" class="brand-container">
-            <!-- Substituição dos textos por imagem do Logo -->
-            <img src="img/logo.png" alt="Fichality - Create, Customize, Play" class="brand-logo">
+        <a href="/index.html" class="brand-container" aria-label="Fichality — início">
+            <img src="/img/logo.png" alt="Fichality" class="brand-logo">
         </a>
 
         <div class="nav-menu">
-            <ul class="nav-links">
-                <li><a href="#" class="nav-link">Início</a></li>
-                <li><a href="#" class="nav-link">Recursos</a></li>
-                <li><a href="#" class="nav-link">Sobre</a></li>
-            </ul>
+            <nav aria-label="Navegação principal">
+                <ul class="nav-links">
+                    <li><a href="#inicio" class="nav-link">Início</a></li>
+                    <li><a href="#recursos" class="nav-link">Recursos</a></li>
+                    <li><a href="#sobre" class="nav-link">Sobre</a></li>
+                </ul>
+            </nav>
             <div class="nav-buttons">
-                <button class="btn btn-dark" id="btnAbrirLogin">Entrar</button>
-                <button class="btn btn-primary" id="btnAbrirRegistro">Criar Conta</button>
+                <button type="button" class="btn btn-dark" id="btnAbrirLogin">Entrar</button>
+                <button type="button" class="btn btn-primary" id="btnAbrirRegistro">Criar conta</button>
             </div>
         </div>
     </header>
 
-    <!-- Hero Content -->
-    <main class="hero">
-        <h1>Liberdade total para suas fichas de <span>RPG de Mesa</span></h1>
-        <p>Crie, personalize e organize seus personagens em qualquer sistema sem ficar preso a estruturas rígidas. O gerenciamento flexível que sua mesa precisa.</p>
+    <main>
+        <section class="hero" id="inicio">
+            <div class="hero-content">
+                <span class="eyebrow">SEU UNIVERSO DE RPG, DO SEU JEITO</span>
+                <h1 class="hero-title">Liberdade para suas fichas de <span>RPG de mesa</span></h1>
+                <p class="hero-text">Crie, personalize e organize personagens em diferentes sistemas sem ficar preso a estruturas rígidas. Monte fichas que acompanham as regras e a imaginação da sua mesa.</p>
+                <div class="nav-actions">
+                    <button type="button" class="btn btn-primary" id="btnHeroComecar">Começar agora</button>
+                    <a class="btn btn-outline" href="#recursos">Conhecer recursos</a>
+                </div>
+                <div class="hero-proof" aria-label="Principais características">
+                    <span>✓ Fichas flexíveis</span>
+                    <span>✓ Modelos reutilizáveis</span>
+                    <span>✓ Dados salvos na sua conta</span>
+                </div>
+            </div>
 
-        <div class="nav-actions">
-            <button class="btn btn-primary" id="btnHeroComecar">Começar Agora</button>
-        </div>
+            <aside class="hero-aside" aria-label="Apresentação do Fichality">
+                <div class="hero-aside-mark" aria-hidden="true">✦</div>
+                <span class="hero-aside-kicker">CRIE · PERSONALIZE · JOGUE</span>
+                <h2>Sua próxima aventura começa aqui.</h2>
+                <p>Organize atributos, habilidades e equipamentos em uma ficha que faz sentido para o seu sistema.</p>
+                <div class="hero-aside-lines" aria-hidden="true"><span></span><span></span><span></span></div>
+            </aside>
+        </section>
 
-        <section class="features-grid">
-            <article class="feature-card">
-                <h3>Sem Esquemas Rígidos</h3>
-                <p>Adicione, reordene e remova blocos de atributos e habilidades em tempo real.</p>
-            </article>
-            <article class="feature-card">
-                <h3>Qualquer Sistema</h3>
-                <p>Compatível com D&D, Tormenta, Ordem Paranormal ou o seu próprio sistema caseiro.</p>
-            </article>
-            <article class="feature-card">
-                <h3>Persistência Híbrida</h3>
-                <p>Segurança relacional para sua conta e estrutura ultra-flexível em JSON para seus dados.</p>
-            </article>
+        <section class="features-section" id="recursos">
+            <div class="section-intro">
+                <span class="eyebrow">FEITO PARA QUEM JOGA</span>
+                <h2>Um espaço para suas histórias</h2>
+                <p>Comece com o essencial e evolua para sistemas, modelos e ferramentas que acompanhem sua mesa.</p>
+            </div>
+            <div class="features-grid">
+                <article class="feature-card">
+                    <span class="feature-number">01</span>
+                    <h3>Sem estruturas rígidas</h3>
+                    <p>Adicione, reordene e remova blocos de atributos e habilidades de acordo com a necessidade da ficha.</p>
+                </article>
+                <article class="feature-card">
+                    <span class="feature-number">02</span>
+                    <h3>Seu sistema, suas regras</h3>
+                    <p>Organize sistemas conhecidos ou crie um sistema autoral com sua própria descrição e modelo de ficha.</p>
+                </article>
+                <article class="feature-card">
+                    <span class="feature-number">03</span>
+                    <h3>Modelos reutilizáveis</h3>
+                    <p>Use modelos como ponto de partida para novos personagens sem montar a mesma estrutura toda vez.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="about-section" id="sobre">
+            <div class="about-info">
+                <span class="eyebrow eyebrow-light">SOBRE O PROJETO</span>
+                <h2>Mais liberdade para jogar.</h2>
+                <p>O Fichality é uma plataforma em desenvolvimento para criar, personalizar e gerenciar fichas de personagens de RPG. A proposta é permitir que diferentes sistemas convivam em uma experiência flexível e fácil de adaptar.</p>
+            </div>
+            <div class="features-column">
+                <article class="feature-card feature-card-dark">
+                    <h3>Estrutura flexível</h3>
+                    <p>Campos e blocos adaptáveis a diferentes estilos de jogo.</p>
+                </article>
+                <article class="feature-card feature-card-dark">
+                    <h3>Persistência híbrida</h3>
+                    <p>Dados relacionais para as entidades principais e JSON para estruturas variáveis das fichas.</p>
+                </article>
+                <article class="feature-card feature-card-dark">
+                    <h3>Biblioteca em evolução</h3>
+                    <p>Uma base para sistemas, modelos, equipamentos e campanhas que será ampliada por etapas.</p>
+                </article>
+            </div>
         </section>
     </main>
 
-    <!-- Modal de Login -->
-    <div class="modal-overlay" id="modalLogin">
-        <div class="modal-card">
+    <footer class="landing-footer">
+        <span>© 2026 Fichality · Projeto de conclusão de curso — FATEC</span>
+        <a href="#inicio">Voltar ao topo ↑</a>
+    </footer>
+
+    <div class="modal-overlay" id="modalLogin" aria-hidden="true">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="tituloLogin">
             <div class="modal-header">
-                <h2>Acessar Conta</h2>
-                <button class="modal-close" class="btnFecharModal">&times;</button>
+                <h2 id="tituloLogin">Acessar conta</h2>
+                <button type="button" class="modal-close" aria-label="Fechar janela">&times;</button>
             </div>
-
-            <div id="alertLogin" class="alert-message alert-danger"></div>
-
+            <div id="alertLogin" class="alert-message alert-danger" role="alert"></div>
             <form id="formLogin">
                 <div class="form-group">
                     <label for="loginEmail">E-mail</label>
-                    <input type="email" id="loginEmail" placeholder="seu@email.com" required>
+                    <input type="email" id="loginEmail" autocomplete="email" placeholder="seu@email.com" required>
                 </div>
                 <div class="form-group">
                     <label for="loginSenha">Senha</label>
-                    <input type="password" id="loginSenha" placeholder="••••••••" required>
+                    <input type="password" id="loginSenha" autocomplete="current-password" placeholder="Sua senha" required>
                 </div>
                 <button type="submit" class="btn btn-primary btn-full">Entrar</button>
             </form>
-
-            <div class="modal-footer-text">
-                Não possui uma conta? <a id="linkIrParaRegistro">Cadastre-se</a>
-            </div>
+            <p class="modal-footer-text">Ainda não tem uma conta? <a href="#" id="linkIrParaRegistro">Cadastre-se</a></p>
         </div>
     </div>
 
-    <!-- Modal de Registro -->
-    <div class="modal-overlay" id="modalRegistro">
-        <div class="modal-card">
+    <div class="modal-overlay" id="modalRegistro" aria-hidden="true">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="tituloRegistro">
             <div class="modal-header">
-                <h2>Criar Nova Conta</h2>
-                <button class="modal-close" class="btnFecharModal">&times;</button>
+                <h2 id="tituloRegistro">Criar conta</h2>
+                <button type="button" class="modal-close" aria-label="Fechar janela">&times;</button>
             </div>
-
-            <div id="alertRegistro" class="alert-message"></div>
-
+            <div id="alertRegistro" class="alert-message alert-danger" role="alert"></div>
             <form id="formRegistro">
                 <div class="form-group">
-                    <label for="regNome">Nome Completo / Apelido</label>
-                    <input type="text" id="regNome" placeholder="Ex: Mestre Mago" required>
+                    <label for="regNome">Nome ou apelido</label>
+                    <input type="text" id="regNome" autocomplete="name" maxlength="100" placeholder="Ex.: Mestre Mago" required>
                 </div>
                 <div class="form-group">
                     <label for="regEmail">E-mail</label>
-                    <input type="email" id="regEmail" placeholder="seu@email.com" required>
+                    <input type="email" id="regEmail" autocomplete="email" placeholder="seu@email.com" required>
                 </div>
                 <div class="form-group">
                     <label for="regSenha">Senha</label>
-                    <input type="password" id="regSenha" placeholder="Mínimo 6 caracteres" minlength="6" required>
+                    <input type="password" id="regSenha" autocomplete="new-password" minlength="8" placeholder="Mínimo de 8 caracteres" required>
                 </div>
-                <button type="submit" class="btn btn-primary btn-full">Registrar</button>
+                <button type="submit" class="btn btn-primary btn-full">Criar conta</button>
             </form>
-
-            <div class="modal-footer-text">
-                Já tem uma conta? <a id="linkIrParaLogin">Faça Login</a>
-            </div>
+            <p class="modal-footer-text">Já tem conta? <a href="#" id="linkIrParaLogin">Entrar</a></p>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer>
-        &copy; 2026 Fichality - Projeto de Conclusão de Curso (Fatec)
-    </footer>
-
-    <!-- Lógica de Controle dos Modais e Autenticação -->
-    <script src="js/auth.js"></script>
     <script>
-        // Lógica de abertura/fechamento dos Modais
-        const modalLogin = document.getElementById('modalLogin');
-        const modalRegistro = document.getElementById('modalRegistro');
+        (() => {
+            const login = document.getElementById('modalLogin');
+            const registro = document.getElementById('modalRegistro');
+            const abrirLogin = document.getElementById('btnAbrirLogin');
+            const abrirRegistro = document.getElementById('btnAbrirRegistro');
+            const comecar = document.getElementById('btnHeroComecar');
 
-        const btnAbrirLogin = document.getElementById('btnAbrirLogin');
-        const btnAbrirRegistro = document.getElementById('btnAbrirRegistro');
-        const btnHeroComecar = document.getElementById('btnHeroComecar');
-        const linkIrParaRegistro = document.getElementById('linkIrParaRegistro');
-        const linkIrParaLogin = document.getElementById('linkIrParaLogin');
-
-        function fecharModais() {
-            modalLogin.classList.remove('active');
-            modalRegistro.classList.remove('active');
-        }
-
-        btnAbrirLogin.addEventListener('click', () => {
-            fecharModais();
-            modalLogin.classList.add('active');
-        });
-
-        btnAbrirRegistro.addEventListener('click', () => {
-            fecharModais();
-            modalRegistro.classList.add('active');
-        });
-
-        btnHeroComecar.addEventListener('click', () => {
-            fecharModais();
-            modalRegistro.classList.add('active');
-        });
-
-        linkIrParaRegistro.addEventListener('click', () => {
-            fecharModais();
-            modalRegistro.classList.add('active');
-        });
-
-        linkIrParaLogin.addEventListener('click', () => {
-            fecharModais();
-            modalLogin.classList.add('active');
-        });
-
-        document.querySelectorAll('.modal-close').forEach(btn => {
-            btn.addEventListener('click', fecharModais);
-        });
-
-        window.addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal-overlay')) {
-                fecharModais();
+            function abrir(modal) {
+                [login, registro].forEach(item => {
+                    item.classList.remove('active');
+                    item.setAttribute('aria-hidden', 'true');
+                });
+                modal.classList.add('active');
+                modal.setAttribute('aria-hidden', 'false');
+                modal.querySelector('input')?.focus();
             }
-        });
+
+            function fechar() {
+                [login, registro].forEach(item => {
+                    item.classList.remove('active');
+                    item.setAttribute('aria-hidden', 'true');
+                });
+            }
+
+            abrirLogin?.addEventListener('click', () => abrir(login));
+            abrirRegistro?.addEventListener('click', () => abrir(registro));
+            comecar?.addEventListener('click', () => abrir(registro));
+            document.getElementById('linkIrParaRegistro')?.addEventListener('click', e => { e.preventDefault(); abrir(registro); });
+            document.getElementById('linkIrParaLogin')?.addEventListener('click', e => { e.preventDefault(); abrir(login); });
+            document.querySelectorAll('.modal-close').forEach(button => button.addEventListener('click', fechar));
+            [login, registro].forEach(modal => modal.addEventListener('click', e => { if (e.target === modal) fechar(); }));
+            document.addEventListener('keydown', e => { if (e.key === 'Escape') fechar(); });
+        })();
     </script>
 </body>
 </html>

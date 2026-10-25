@@ -1,7 +1,6 @@
-﻿
 /* ==========================================================================
    FICHALITY — HOME
-   Dados reais consumidos da API ASP.NET Core
+   Consome a API e encaminha fichas para a página de visualização.
    ========================================================================== */
 
 document.addEventListener("DOMContentLoaded", inicializarHome);
@@ -9,10 +8,6 @@ document.addEventListener("DOMContentLoaded", inicializarHome);
 let usuarioAtual = null;
 let indiceDestaque = 0;
 let destaques = [];
-
-// --------------------------------------------------------------------------
-// Inicialização
-// --------------------------------------------------------------------------
 
 async function inicializarHome() {
     configurarEventos();
@@ -22,112 +17,81 @@ async function inicializarHome() {
             credentials: "same-origin"
         });
 
-        if (!respostaUsuario.ok) {
-            window.location.replace("index.html");
+        if (respostaUsuario.status === 401 || respostaUsuario.status === 403) {
+            window.location.replace("/index.html");
             return;
+        }
+        if (!respostaUsuario.ok) {
+            throw new Error(`Não foi possível validar a sessão (HTTP ${respostaUsuario.status}).`);
         }
 
         usuarioAtual = await respostaUsuario.json();
+        document.getElementById("nomeUsuario").textContent = usuarioAtual.nome || "aventureiro";
 
-        const nome = usuarioAtual.nome || "aventureiro";
-        document.getElementById("nomeUsuario").textContent = nome;
-
-        await Promise.all([
-            carregarResumo(),
-            carregarDestaques()
-        ]);
+        const resultados = await Promise.allSettled([carregarResumo(), carregarDestaques()]);
+        if (resultados[0].status === "rejected") {
+            console.error("Erro ao carregar o resumo:", resultados[0].reason);
+            mostrarErroFichas("Não foi possível carregar suas fichas. Verifique se a API /api/home está disponível.");
+        }
     } catch (erro) {
         console.error("Erro ao inicializar a HOME:", erro);
-
-        mostrarErroFichas(
-            "Não foi possível carregar os dados. Tente atualizar a página."
-        );
+        mostrarErroFichas("Não foi possível carregar os dados. Atualize a página ou entre novamente.");
     }
 }
-
-// --------------------------------------------------------------------------
-// Eventos da interface
-// --------------------------------------------------------------------------
 
 function configurarEventos() {
-    document.getElementById("btnNovaFicha")
-        ?.addEventListener("click", abrirDialogNovaFicha);
-
-    document.getElementById("fecharDialog")
-        ?.addEventListener("click", fecharDialogNovaFicha);
-
-    document.getElementById("formNovaFicha")
-        ?.addEventListener("submit", criarNovaFicha);
-
-    document.getElementById("slideAnterior")
-        ?.addEventListener("click", () => mudarDestaque(-1));
-
-    document.getElementById("slideProximo")
-        ?.addEventListener("click", () => mudarDestaque(1));
+    document.getElementById("btnNovaFicha")?.addEventListener("click", abrirDialogNovaFicha);
+    document.getElementById("fecharDialog")?.addEventListener("click", fecharDialogNovaFicha);
+    document.getElementById("formNovaFicha")?.addEventListener("submit", criarNovaFicha);
+    document.getElementById("slideAnterior")?.addEventListener("click", () => mudarDestaque(-1));
+    document.getElementById("slideProximo")?.addEventListener("click", () => mudarDestaque(1));
 }
 
-// --------------------------------------------------------------------------
-// Resumo do usuário e fichas recentes
-// --------------------------------------------------------------------------
-
 async function carregarResumo() {
-    const resposta = await fetch("/api/home", {
-        credentials: "same-origin"
-    });
-
-    if (resposta.status === 401) {
-        window.location.replace("index.html");
+    const resposta = await fetch("/api/home", { credentials: "same-origin" });
+    if (resposta.status === 401 || resposta.status === 403) {
+        window.location.replace("/index.html");
         return;
     }
+    const dados = await lerJson(resposta);
+    if (!resposta.ok) throw new Error(dados.mensagem || dados.title || `Falha ao carregar resumo (HTTP ${resposta.status}).`);
 
-    if (!resposta.ok) {
-        throw new Error(`Falha ao carregar a HOME: HTTP ${resposta.status}`);
-    }
-
-    const dados = await resposta.json();
-
-    document.getElementById("nomeUsuario").textContent =
-        dados.usuario?.nome || usuarioAtual?.nome || "aventureiro";
-
-    document.getElementById("totalFichas").textContent =
-        dados.totalFichas ?? 0;
-
-    document.getElementById("totalSistemas").textContent =
-        dados.totalSistemasCriados ?? 0;
-
-    renderizarFichas(dados.fichasRecentes || []);
+    document.getElementById("nomeUsuario").textContent = dados.usuario?.nome || usuarioAtual?.nome || "aventureiro";
+    document.getElementById("totalFichas").textContent = dados.totalFichas ?? 0;
+    document.getElementById("totalSistemas").textContent = dados.totalSistemasCriados ?? 0;
+    renderizarFichas(Array.isArray(dados.fichasRecentes) ? dados.fichasRecentes : []);
 }
 
 function renderizarFichas(fichas) {
     const container = document.getElementById("fichasContainer");
     container.replaceChildren();
 
-    if (!fichas.length) {
+    if (fichas.length === 0) {
         const estado = document.createElement("div");
         estado.className = "empty-state";
-
         const titulo = document.createElement("h3");
         titulo.textContent = "Sua próxima aventura começa aqui";
-
         const texto = document.createElement("p");
-        texto.textContent =
-            "Você ainda não tem fichas. Crie seu primeiro personagem para começar.";
-
+        texto.textContent = "Você ainda não tem fichas. Crie seu primeiro personagem para começar.";
         const botao = document.createElement("button");
         botao.type = "button";
         botao.className = "btn btn-primary";
         botao.textContent = "Criar minha primeira ficha";
         botao.addEventListener("click", abrirDialogNovaFicha);
-
         estado.append(titulo, texto, botao);
         container.appendChild(estado);
         return;
     }
 
-    fichas.forEach(ficha => {
+    for (const ficha of fichas) {
+        const id = Number(ficha.id);
+        if (!Number.isInteger(id) || id <= 0) continue;
+
         const link = document.createElement("a");
         link.className = "ficha-card";
-        link.href = `editor.html?id=${encodeURIComponent(ficha.id)}`;
+        // A Home abre primeiro o modo de leitura; a edição é uma ação separada.
+        link.href = `/visualizar-ficha.html?id=${encodeURIComponent(id)}`;
+        link.setAttribute("aria-label", `Visualizar ficha ${ficha.nomePersonagem || "sem nome"}`);
 
         const simbolo = document.createElement("span");
         simbolo.className = "ficha-symbol";
@@ -141,9 +105,7 @@ function renderizarFichas(fichas) {
         titulo.textContent = ficha.nomePersonagem || "Personagem sem nome";
 
         const sistema = document.createElement("p");
-        sistema.textContent =
-            `${ficha.sistema || ficha.sistemaRpg || "Sistema não informado"} · ` +
-            formatarData(ficha.dataAtualizacao);
+        sistema.textContent = `${ficha.sistema || ficha.sistemaRpg || "Sistema não informado"} · ${formatarData(ficha.dataAtualizacao)}`;
 
         detalhes.append(titulo, sistema);
 
@@ -154,101 +116,76 @@ function renderizarFichas(fichas) {
 
         link.append(simbolo, detalhes, seta);
         container.appendChild(link);
-    });
+    }
+
+    if (!container.childElementCount) {
+        mostrarErroFichas("Nenhuma ficha válida foi retornada pela API.");
+    }
 }
 
 function mostrarErroFichas(mensagem) {
     const container = document.getElementById("fichasContainer");
     if (!container) return;
-
     const aviso = document.createElement("p");
     aviso.className = "section-loading";
     aviso.textContent = mensagem;
-
     container.replaceChildren(aviso);
 }
 
 function formatarData(valor) {
     if (!valor) return "Data indisponível";
-
     const data = new Date(valor);
-
-    if (Number.isNaN(data.getTime())) {
-        return "Data indisponível";
-    }
-
+    if (Number.isNaN(data.getTime())) return "Data indisponível";
     return `Atualizada em ${data.toLocaleDateString("pt-BR")}`;
 }
 
-// --------------------------------------------------------------------------
-// Carrossel de destaques
-// --------------------------------------------------------------------------
-
 async function carregarDestaques() {
     const container = document.getElementById("carouselContainer");
-
     try {
-        const resposta = await fetch("/api/destaques");
-
-        if (!resposta.ok) {
-            throw new Error(`HTTP ${resposta.status}`);
-        }
-
-        destaques = await resposta.json();
+        const resposta = await fetch("/api/destaques", { credentials: "same-origin" });
+        const dados = await lerJson(resposta);
+        if (!resposta.ok) throw new Error(dados.mensagem || dados.title || `HTTP ${resposta.status}`);
+        destaques = Array.isArray(dados) ? dados : [];
         indiceDestaque = 0;
-
         renderizarDestaque();
     } catch (erro) {
         console.error("Erro ao carregar destaques:", erro);
-
         container.replaceChildren();
-
         const aviso = document.createElement("div");
         aviso.className = "carousel-placeholder";
-        aviso.textContent =
-            "Não foi possível carregar os destaques neste momento.";
-
+        aviso.textContent = "Não foi possível carregar os destaques neste momento.";
         container.appendChild(aviso);
+        document.getElementById("carouselIndicadores").replaceChildren();
     }
 }
 
 function mudarDestaque(direcao) {
     if (!destaques.length) return;
-
-    indiceDestaque =
-        (indiceDestaque + direcao + destaques.length) % destaques.length;
-
+    indiceDestaque = (indiceDestaque + direcao + destaques.length) % destaques.length;
     renderizarDestaque();
 }
 
 function renderizarDestaque() {
     const container = document.getElementById("carouselContainer");
     const indicadores = document.getElementById("carouselIndicadores");
-
     container.replaceChildren();
     indicadores.replaceChildren();
 
     if (!destaques.length) {
-        const vazio = document.createElement("div");
-        vazio.className = "featured-slide";
-
+        const slide = document.createElement("article");
+        slide.className = "featured-slide";
         const conteudo = document.createElement("div");
         conteudo.className = "featured-content";
-
-        const etiqueta = document.createElement("span");
-        etiqueta.className = "featured-tag";
-        etiqueta.textContent = "Em breve";
-
+        const tag = document.createElement("span");
+        tag.className = "featured-tag";
+        tag.textContent = "Em breve";
         const titulo = document.createElement("h3");
         titulo.textContent = "Novidades do universo RPG";
-
         const texto = document.createElement("p");
-        texto.textContent =
-            "Os destaques da comunidade aparecerão aqui assim que houver conteúdos publicados.";
-
-        conteudo.append(etiqueta, titulo, texto);
-        vazio.appendChild(conteudo);
-        container.appendChild(vazio);
+        texto.textContent = "Os destaques aparecerão aqui quando houver conteúdos publicados.";
+        conteudo.append(tag, titulo, texto);
+        slide.appendChild(conteudo);
+        container.appendChild(slide);
         return;
     }
 
@@ -256,59 +193,53 @@ function renderizarDestaque() {
     const slide = document.createElement("article");
     slide.className = "featured-slide";
 
-    const imagemUrl = obter(destaque, "imagemUrl", "ImagemUrl");
-
-    if (imagemUrl) {
-        const urlSegura = validarUrl(imagemUrl);
-
-        if (urlSegura) {
-            const imagem = document.createElement("img");
-            imagem.className = "featured-slide-image";
-            imagem.src = urlSegura;
-            imagem.alt = "";
-            imagem.loading = "lazy";
-
-            imagem.addEventListener("error", () => imagem.remove());
-            slide.classList.add("has-image");
-            slide.appendChild(imagem);
-        }
+    const imagem = valor(destaque, "imagemUrl", "ImagemUrl");
+    const imagemSegura = imagem ? validarUrl(imagem) : null;
+    if (imagemSegura) {
+        const img = document.createElement("img");
+        img.className = "featured-slide-image";
+        img.src = imagemSegura;
+        img.alt = "";
+        img.loading = "lazy";
+        img.addEventListener("error", () => img.remove());
+        slide.classList.add("has-image");
+        slide.appendChild(img);
     }
 
     const conteudo = document.createElement("div");
     conteudo.className = "featured-content";
-
-    const etiqueta = document.createElement("span");
-    etiqueta.className = "featured-tag";
-    etiqueta.textContent =
-        obter(destaque, "tipo", "Tipo") || "Destaque";
-
+    const tag = document.createElement("span");
+    tag.className = "featured-tag";
+    tag.textContent = valor(destaque, "tipo", "Tipo") || "Destaque";
     const titulo = document.createElement("h3");
-    titulo.textContent =
-        obter(destaque, "titulo", "Titulo") || "Destaque do Fichality";
-
+    titulo.textContent = valor(destaque, "titulo", "Titulo") || "Destaque do Fichality";
     const resumo = document.createElement("p");
-    resumo.textContent =
-        obter(destaque, "resumo", "Resumo") || "";
+    resumo.textContent = valor(destaque, "resumo", "Resumo") || "";
+    conteudo.append(tag, titulo, resumo);
 
-    conteudo.append(etiqueta, titulo, resumo);
-
-    const linkInformado = obter(destaque, "linkUrl", "LinkUrl");
-    const linkSeguro = linkInformado ? validarUrl(linkInformado) : null;
-
+    const linkStr = valor(destaque, "linkUrl", "LinkUrl");
+    const linkSeguro = linkStr ? validarUrl(linkStr) : null;
     if (linkSeguro) {
         const link = document.createElement("a");
         link.className = "featured-link";
         link.href = linkSeguro;
         link.textContent = "Conhecer destaque →";
-
-        // Links externos são abertos em outra aba.
-        if (new URL(linkSeguro, window.location.origin).origin
-            !== window.location.origin) {
+        if (new URL(linkSeguro, window.location.origin).origin !== window.location.origin) {
             link.target = "_blank";
             link.rel = "noopener noreferrer";
         }
-
         conteudo.appendChild(link);
+    } else {
+        const sistemaId = Number(valor(destaque, "sistemaRpgId", "SistemaRpgId"));
+        const modeloId = Number(valor(destaque, "modeloFichaId", "ModeloFichaId"));
+        const destino = (sistemaId > 0 || modeloId > 0) ? "/sistemas.html" : null;
+        if (destino) {
+            const link = document.createElement("a");
+            link.className = "featured-link";
+            link.href = destino;
+            link.textContent = "Conhecer destaque →";
+            conteudo.appendChild(link);
+        }
     }
 
     slide.appendChild(conteudo);
@@ -317,53 +248,35 @@ function renderizarDestaque() {
     destaques.forEach((_, indice) => {
         const botao = document.createElement("button");
         botao.type = "button";
-        botao.className =
-            indice === indiceDestaque ? "active" : "";
-
-        botao.setAttribute(
-            "aria-label",
-            `Exibir destaque ${indice + 1}`
-        );
-
-        botao.setAttribute(
-            "aria-current",
-            indice === indiceDestaque ? "true" : "false"
-        );
-
+        botao.className = indice === indiceDestaque ? "active" : "";
+        botao.setAttribute("aria-label", `Exibir destaque ${indice + 1}`);
+        botao.setAttribute("aria-current", indice === indiceDestaque ? "true" : "false");
         botao.addEventListener("click", () => {
             indiceDestaque = indice;
             renderizarDestaque();
         });
-
         indicadores.appendChild(botao);
     });
 }
 
-function obter(objeto, camelCase, pascalCase) {
+function valor(objeto, camelCase, pascalCase) {
     return objeto?.[camelCase] ?? objeto?.[pascalCase] ?? "";
 }
 
-function validarUrl(valor) {
+function validarUrl(valorUrl) {
     try {
-        const url = new URL(valor, window.location.origin);
-
-        if (url.protocol !== "https:" && url.protocol !== "http:") {
-            return null;
-        }
-
+        const url = new URL(valorUrl, window.location.origin);
+        if (url.protocol !== "https:" && url.protocol !== "http:") return null;
         return url.href;
     } catch {
         return null;
     }
 }
 
-// --------------------------------------------------------------------------
-// Criar uma ficha
-// --------------------------------------------------------------------------
-
 function abrirDialogNovaFicha() {
+    const dialog = document.getElementById("dialogNovaFicha");
     document.getElementById("erroNovaFicha").textContent = "";
-    document.getElementById("dialogNovaFicha").showModal();
+    if (typeof dialog.showModal === "function") dialog.showModal();
     document.getElementById("novoNomePersonagem").focus();
 }
 
@@ -373,25 +286,12 @@ function fecharDialogNovaFicha() {
 
 async function criarNovaFicha(evento) {
     evento.preventDefault();
-
-    const form = evento.currentTarget;
     const botao = document.getElementById("confirmarNovaFicha");
     const erro = document.getElementById("erroNovaFicha");
-
     erro.textContent = "";
 
-    if (!usuarioAtual?.id) {
-        erro.textContent =
-            "Não foi possível identificar sua sessão. Entre novamente.";
-        return;
-    }
-
-    const nomePersonagem =
-        document.getElementById("novoNomePersonagem").value.trim();
-
-    const sistemaRpg =
-        document.getElementById("novoSistemaRpg").value.trim();
-
+    const nomePersonagem = document.getElementById("novoNomePersonagem").value.trim();
+    const sistemaRpg = document.getElementById("novoSistemaRpg").value.trim();
     if (!nomePersonagem || !sistemaRpg) {
         erro.textContent = "Preencha o nome do personagem e o sistema.";
         return;
@@ -399,52 +299,34 @@ async function criarNovaFicha(evento) {
 
     botao.disabled = true;
     botao.textContent = "Criando...";
-
     try {
         const resposta = await fetch("/api/ficha/criar", {
             method: "POST",
             credentials: "same-origin",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 nomePersonagem,
                 sistemaRpg,
-                usuarioId: usuarioAtual.id
+                usuarioId: usuarioAtual?.id ?? 0
             })
         });
-
-        const textoResposta = await resposta.text();
-        let resultado = {};
-
-        try {
-            resultado = textoResposta ? JSON.parse(textoResposta) : {};
-        } catch {
-            resultado = {};
-        }
-
-        if (!resposta.ok) {
-            throw new Error(
-                resultado.mensagem ||
-                resultado.title ||
-                `Não foi possível criar a ficha (HTTP ${resposta.status}).`
-            );
-        }
-
-        if (!resultado.fichaId) {
-            throw new Error(
-                "A API respondeu, mas não retornou o ID da nova ficha."
-            );
-        }
-
-        window.location.href =
-            `home.html?id=${encodeURIComponent(resultado.fichaId)}`;
+        const dados = await lerJson(resposta);
+        if (!resposta.ok) throw new Error(dados.mensagem || dados.title || `Falha ao criar ficha (HTTP ${resposta.status}).`);
+        const id = Number(dados.fichaId ?? dados.id);
+        if (!Number.isInteger(id) || id <= 0) throw new Error("A API não retornou o ID da ficha criada.");
+        window.location.assign(`/visualizar-ficha.html?id=${encodeURIComponent(id)}`);
     } catch (erroCriacao) {
         console.error("Erro ao criar ficha:", erroCriacao);
-        erro.textContent =
-            erroCriacao.message || "Erro ao criar a ficha.";
+        erro.textContent = erroCriacao.message || "Não foi possível criar a ficha.";
     } finally {
         botao.disabled = false;
         botao.textContent = "Criar ficha";
     }
+}
+
+async function lerJson(resposta) {
+    const texto = await resposta.text();
+    if (!texto) return {};
+    try { return JSON.parse(texto); }
+    catch { return { mensagem: texto }; }
 }
