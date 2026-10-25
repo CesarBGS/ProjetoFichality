@@ -2,15 +2,16 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copia os arquivos de projeto e restaura as dependências
-COPY *.csproj ./
+# Copia todos os arquivos do repositório
+COPY . .
+
+# Restaura as dependências apontando direto para o repositório
 RUN dotnet restore
 
-# Copia todo o código e compila
-COPY . ./
+# Compila o projeto em modo Release
 RUN dotnet publish -c Release -o /app/out
 
-# Estágio de Runtime (Imagem leve para execução)
+# Estágio de Execução (Runtime)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 COPY --from=build /app/out .
